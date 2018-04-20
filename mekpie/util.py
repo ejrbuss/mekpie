@@ -4,7 +4,8 @@ from re      import sub
 from os.path import isfile, isdir
 
 # Qualified local imports
-import mekpie.debug as debug
+import mekpie.debug    as debug
+import mekpie.messages as messages
 
 def panic(message):
     stderr.write(f'\n{message.strip()}\n')
@@ -39,12 +40,12 @@ def underlined_collection(underlined_element, collection):
 def check_is_file(path):
     if isfile(path):
         return path
-    panic(f'File not found: Could not find "{path}"!')
+    panic(messages.file_not_found.format(path))
 
 def check_is_dir(path):
     if isdir(path):
         return path
-    panic(f'Directory not found: Could not find "{path}"!')
+    panic(messages.directory_not_found.format(path))
 
 def type_name(x):
     return type(x).__name__

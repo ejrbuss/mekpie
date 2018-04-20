@@ -1,31 +1,37 @@
 from os.path import join, curdir
 
-def get_project_path(name):
-    return join(curdir, name)
+project_path = curdir
 
-def get_mekpy_path(name):
-    return join(get_project_path(name), 'mek.py')
+def set_project_path(name):
+    global project_path
+    project_path = join(curdir, name)
 
-def get_src_path(name):
-    return join(get_project_path(name), 'src')
+def get_project_path():
+    return project_path
 
-def get_main_path(name, main):
-    return join(get_src_path(name), main)
+def get_mekpy_path():
+    return join(get_project_path(), 'mek.py')
 
-def get_test_path(name):
-    return join(get_project_path(name), 'tests')
+def get_src_path():
+    return join(get_project_path(), 'src')
 
-def get_includes_path(name):
-    return join(get_project_path(name), 'includes')
+def get_test_path():
+    return join(get_project_path(), 'tests')
 
-def get_target_path(name):
-    return join(get_project_path(name), 'target')
+def get_includes_path():
+    return join(get_project_path(), 'includes')
 
-def get_target_debug_path(name):
-    return join(get_target_path(name), 'debug')
+def get_target_path():
+    return join(get_project_path(), 'target')
 
-def get_target_release_path(name):
-    return join(get_target_path(name), 'release')
+def get_target_debug_path():
+    return join(get_target_path(), 'debug')
 
-def get_target_tests_path(name):
-    return join(get_target_path(name), 'tests')
+def get_target_release_path():
+    return join(get_target_path(), 'release')
+
+def get_target_tests_path():
+    return join(get_target_path(), 'tests')
+
+def get_main_path(main):
+    return join(get_src_path(), main)

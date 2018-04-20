@@ -9,27 +9,27 @@ import mekpie.messages as messages
 # Local imports
 from .util        import rest, panic
 from .config      import read_config, config_path
-from .arguments   import parse, pre_config_actions
+from .arguments   import parse, pre_config_commands
 
 def main(args=rest(argv)):
     debug.args = args
     handle_options(parse(args))
 
 def handle_options(options):
-    prepare_for_action(options)
-    perform_action(options)
+    prepare_for_command(options)
+    perform_command(options)
 
-def prepare_for_action(options):
+def prepare_for_command(options):
     if options.developer:
         enable_developer_mode()
 
-def perform_action(options):
-    if options.action is None:
-        panic(messages.no_action)
-    elif options.action in pre_config_actions():
-        options.action(options)
+def perform_command(options):
+    if options.command is None:
+        panic(messages.no_command)
+    elif options.command in pre_config_commands():
+        options.command(options)
     else:
-        options.action(options, get_config())
+        options.command(options, get_config())
 
 def get_config():
     return read_config(open(config_path(curdir)).read())

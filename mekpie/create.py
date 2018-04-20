@@ -1,12 +1,16 @@
+# External imports
 from os.path import isdir, curdir, join
 from os      import mkdir
 
+# Qualified local imports
 import mekpie.messages as messages
 
+# Local imports
 from .util        import panic, empty
 from .config      import read_config
 from .definitions import DEFAULT_MEKPY, MAIN
 from .structure   import (
+    set_project_path,
     get_project_path,
     get_mekpy_path,
     get_src_path,
@@ -19,15 +23,15 @@ from .structure   import (
     get_target_tests_path,
 )
 
-def action_new(options):
+def command_new(options):
     name = options.name
     check_name(name)
     create_project_directory(name)
     create_mekpy(name)
     create_src(name)
-    create_tests(name)
-    create_includes(name)
-    create_target(name)
+    create_tests()
+    create_includes()
+    create_target()
     config = read_config(get_mekpy_source(name))
 
 def check_name(name):
@@ -37,32 +41,40 @@ def check_name(name):
         panic(messages.name_cannot_be_empty)
 
 def create_project_directory(name):
-    mkdir(get_project_path(name))
+    set_project_path(name)
+    mkdir(get_project_path())
 
 def create_mekpy(name):
-    open(get_mekpy_path(name), 'w+').write(get_mekpy_source(name))
+    open(get_mekpy_path(), 'w+').write(get_mekpy_source(name))
 
 def create_src(name):
-    mkdir(get_src_path(name))
-    open(get_main_path(name, name + '.c'), 'w+').write(get_main_source())
+    mkdir(get_src_path())
+    open(get_main_path(name + '.c'), 'w+').write(get_main_source())
 
-def create_tests(name):
-    mkdir(get_test_path(name))
+def create_tests():
+    mkdir(get_test_path())
 
-def create_includes(name):
-    mkdir(get_includes_path(name))
+def create_includes():
+    mkdir(get_includes_path())
 
-def create_target(name):
-    mkdir(get_target_path(name))
-    mkdir(get_target_debug_path(name))
-    mkdir(get_target_release_path(name))
-    mkdir(get_target_tests_path(name))
-
-def action_init(options):
-    panic(f'action_init:\n{options}')
+def create_target():
+    mkdir(get_target_path())
+    mkdir(get_target_debug_path())
+    mkdir(get_target_release_path())
+    mkdir(get_target_tests_path())
 
 def get_mekpy_source(name):
     return DEFAULT_MEKPY.format(name, name + '.c')
 
 def get_main_source():
     return MAIN
+
+def command_init(options):
+    name = options.name
+    check_name(name)
+    create_mekpy(name)
+    create_src(name)
+    create_tests()
+    create_includes()
+    create_target()
+    config = read_config(get_mekpy_source(name))

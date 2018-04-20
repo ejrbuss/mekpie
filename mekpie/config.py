@@ -1,7 +1,12 @@
+# External imports
 from os.path import join, basename, abspath
 from os      import curdir
 from sys     import exc_info
 
+# Qualified local imports
+import mekpie.messages as messages
+
+# Local imports
 from .definitions import Config
 from .util        import panic, tab, check_is_file, check_is_dir, type_name
 from .structure   import get_main_path
@@ -11,7 +16,7 @@ def read_config(source):
     try:
         exec(source, config_dict)
     except Exception as err:
-        panic(f'Config error: Error while reading mek.py!\n{tab(str(err))}')
+        panic(messages.error_reading_mekpy.format(tab(str(err))))
     return config_from_dict(config_dict)
 
 def config_from_dict(config_dict):
@@ -38,7 +43,7 @@ def check_name(name):
 
 def check_main(config):
     check_type('main', config.main, str)
-    check_is_file(get_main_path(config.name, config.main))
+    check_is_file(get_main_path(config.main))
 
 def check_includes(includes):
     check_type('includes', includes, list)
@@ -59,13 +64,12 @@ def check_dbg(dbg):
 
 def check_type(name, value, expected_type):
     if type(value) != expected_type:
-        panic(f'''
-Config error: Invalid type!
-
-  Expected `{name}` to be of type: {expected_type.__name__}
-  Instead found a value of type: {type_name(value)}
-{tab(get_description(name))}'''
-        )
+        panic(messages.format(
+            name,
+            expected_type.__name__,
+            type_name(value),
+            tab(get_description(name))
+        ))
 
 def get_description(name):
     return {

@@ -11,20 +11,20 @@ from .util import (
     underline,
 )
 from .create import (
-    action_new,
-    action_init,
+    command_new,
+    command_init,
 )
 from .compiler import (
-    action_build,
-    action_run,
-    action_debug,
-    action_test,
+    command_build,
+    command_run,
+    command_debug,
+    command_test,
 )
 
-def action_help(options):
+def command_help(options):
     print(messages.usage)
 
-def action_version(options):
+def command_version(options):
     print(messages.version)
 
 def parse(args):
@@ -43,32 +43,32 @@ def default_options():
         verbose   = False,
         release   = False,
         developer = False,
-        action    = None,
+        command   = None,
         name      = '',
     )._asdict()
 
 def default_command_line_options():
     return [add_option(option, aliases) for (option, aliases) in [
-        ('quiet',        ['-q', '--quiet']),
-        ('verbose',      ['-v', '--verbose']),
-        ('release',      ['-r', '--release']),
-        ('developer',    ['-d', '--developer']),
-        (action_help,    ['-h', '--help', 'help']),
-        (action_version, ['-V', '--version', 'version']),
-        (action_new,     ['new']),
-        (action_init,    ['init']),
-        (action_build,   ['build']),
-        (action_run,     ['run']),
-        (action_test,    ['test']),
-        (action_debug,   ['debug']),
+        ('quiet',         ['-q', '--quiet']),
+        ('verbose',       ['-v', '--verbose']),
+        ('release',       ['-r', '--release']),
+        ('developer',     ['-d', '--developer']),
+        (command_help,    ['-h', '--help', 'help']),
+        (command_version, ['-V', '--version', 'version']),
+        (command_new,     ['new']),
+        (command_init,    ['init']),
+        (command_build,   ['build']),
+        (command_run,     ['run']),
+        (command_test,    ['test']),
+        (command_debug,   ['debug']),
     ]]
 
-def pre_config_actions():
+def pre_config_commands():
     return [
-        action_new,
-        action_init,
-        action_help,
-        action_version,
+        command_new,
+        command_init,
+        command_help,
+        command_version,
     ]
 
 def add_option(option, aliases):
@@ -76,15 +76,15 @@ def add_option(option, aliases):
         if arg in aliases:
             if is_flag(option):
                 add_flag(option, options)
-            if is_action(option):
-                add_action(option, options)
+            if is_command(option):
+                add_command(option, options)
             return True
     return try_option
 
 def is_flag(option):
     return type(option) == str
 
-def is_action(option):
+def is_command(option):
     return callable(option)
 
 def add_flag(flag, options):
@@ -93,14 +93,14 @@ def add_flag(flag, options):
     else:
         options[flag] = True
 
-def add_action(action, options):
-    if options['action']:
-        argument_error(messages.too_many_arguments, action)
+def add_command(command, options):
+    if options['command']:
+        argument_error(messages.too_many_arguments, command)
     else:
-        options['action'] = action
+        options['command'] = command
 
 def try_name(arg, options):
-    if not options['action']:
+    if not options['command']:
         argument_error(messages.unknown_argument, arg)
     if options['name']:
         argument_error(messages.too_many_arguments, arg)

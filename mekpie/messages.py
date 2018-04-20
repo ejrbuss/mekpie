@@ -1,6 +1,5 @@
 # Local Imports
 from .definitions import VERSION
-from .util        import tab
 
 usage = '''
 Usage:
@@ -23,9 +22,11 @@ Commands:
     debug       Build and execute under a debugger
 '''
 
-version = tab(f'    mekpie version {VERSION}')
+version = f'''
+    mekpie version {VERSION}
+'''
 
-no_action = '''
+no_command = '''
 Invalid command: No command provided!
 
     mekpie expects a command following its invocation.
@@ -59,4 +60,26 @@ Missing argument: You must provide the positional argument `name`!
 
     When creating a project with `new` or `init` you must provide a positional
     argument `name` after the command.
+'''
+
+
+error_reading_mekpy = '''
+Config error: Error while reading mek.py!
+{}
+'''
+
+type_error = '''
+Config error: Invalid type!
+
+  Expected `{}` to be of type: {}
+  Instead found a value of type: {}
+{}
+'''
+
+file_not_found = '''
+File not found: Could not find "{}"!
+'''
+
+directory_not_found = '''
+Directory not found: Could not find "{}"!
 '''
