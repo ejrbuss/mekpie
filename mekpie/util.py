@@ -8,11 +8,11 @@ import mekpie.debug    as debug
 import mekpie.messages as messages
 
 def panic(message):
-    stderr.write(f'\n{message.strip()}\n')
-    if debug.debug:
-        raise Exception('Debug')
-    else:
-        exit(1)
+    errprint(f'\n{message.strip()}\n')
+    raise Exception('Debug') if debug.debug else exit(1)
+
+def errprint(string):
+    stderr.write(string)
 
 def empty(collection):
     return len(collection) == 0

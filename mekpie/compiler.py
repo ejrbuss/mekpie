@@ -11,3 +11,5 @@ def command_debug(options, config):
 
 def command_test(options, config):
     panic(f'command_test:\n{options}\n{config}')
+
+def cc(libs, includes, flags, cfile, out)
