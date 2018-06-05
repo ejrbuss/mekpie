@@ -15,6 +15,7 @@ from .create import (
     command_init,
 )
 from .compiler import (
+    command_clean,
     command_build,
     command_run,
     command_debug,
@@ -30,7 +31,7 @@ def command_version(options):
 def parse(args):
     options = default_options()
     for arg in args:
-        for try_option in default_command_line_options():
+        for try_option in available_options():
             if try_option(arg, options):
                 break
         else:
@@ -48,7 +49,7 @@ def default_options():
         name      = '',
     )._asdict()
 
-def default_command_line_options():
+def available_options():
     return [add_option(option, aliases) for (option, aliases) in [
         ('quiet',         ['-q', '--quiet']),
         ('verbose',       ['-v', '--verbose']),
@@ -59,6 +60,7 @@ def default_command_line_options():
         (command_version, ['-V', '--version', 'version']),
         (command_new,     ['new']),
         (command_init,    ['init']),
+        (command_clean,   ['clean']),
         (command_build,   ['build']),
         (command_run,     ['run']),
         (command_test,    ['test']),

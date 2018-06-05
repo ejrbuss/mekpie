@@ -16,6 +16,7 @@ Options:
 Commands:
     new <name>  Create a new mekpie project
     test <name> Build and execute tests or test
+    clean       Remove artefacts from previous builds
     build       Compile the current project
     run         Build and execute main
     debug       Build and execute under a debugger
@@ -36,6 +37,7 @@ Invalid command: No command provided!
         new <name>  Create a new mekpie project
         init <name> Create a project in an existing directory
         test <name> Build and execute tests or test
+        clean       Remove artefacts from previous builds
         build       Compile the current project
         run         Build and execute main
         debug       Build and execute under a debugger
@@ -60,7 +62,6 @@ Missing argument: You must provide the positional argument `name`!
     When creating a project with `new` or `init` you must provide a positional
     argument `name` after the command.
 '''
-
 
 error_reading_mekpy = '''
 Config error: Error while reading mek.py!

@@ -7,11 +7,11 @@ import mekpie.debug    as debug
 import mekpie.messages as messages
 
 # Local imports
-from .util        import rest, panic
-from .config      import read_config, config_path
-from .arguments   import parse, pre_config_commands
+from .util      import cdr, panic, file_as_str
+from .config    import read_config, config_path
+from .arguments import parse, pre_config_commands
 
-def main(args=rest(argv)):
+def main(args=cdr(argv)):
     debug.args = args
     handle_options(parse(args))
 
@@ -21,20 +21,18 @@ def handle_options(options):
 
 def prepare_for_command(options):
     if options.developer:
-        enable_developer_mode()
+        debug.enable()
     if options.changedir:
         chdir(options.name)
 
 def perform_command(options):
-    if options.command is None:
+    command = options.command
+    if command is None:
         panic(messages.no_command)
-    elif options.command in pre_config_commands():
-        options.command(options)
+    elif command in pre_config_commands():
+        command(options)
     else:
-        options.command(options, get_config())
+        command(options, get_config())
 
 def get_config():
-    return read_config(open(config_path(curdir)).read())
-
-def enable_developer_mode():
-    debug.enable()
+    return read_config(file_as_str(config_path(curdir)))

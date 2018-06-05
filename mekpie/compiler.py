@@ -7,10 +7,12 @@ from os.path     import basename, join, abspath
 import mekpie.messages as messages
 
 # Local imports
-from .util      import panic, list_files, flatten, filename
+from .util      import panic, list_files, flatten, filename, remove_contents
 from .structure import (
     get_src_path, 
     get_test_path, 
+    get_target_debug_path,
+    get_target_release_path,
     get_target_build_path,
     get_target_tests_path,
 )
@@ -40,7 +42,23 @@ compilers = {
         optimization = ['-O'],
         custom       = [],
     ),
+    'clang' : CompilerFlags(
+        output       = lambda path : [f'-o', path],
+        include      = lambda path : [f'-I', path],
+        libs         = lambda lib : [f'-l{lib}'],
+        warning      = ['-Wall', '-Wpedantic', '-Wextra'],
+        strict       = ['-Werror'],
+        assemble     = ['-c'],
+        debug        = ['-g'],
+        optimization = ['-O'],
+        custom       = [],
+    ),
 }
+
+def command_clean(options, config):
+    remove_contents(get_target_debug_path())
+    remove_contents(get_target_release_path())
+    remove_contents(get_target_tests_path())
 
 def command_build(options, config):
     add_default_includes(config)
@@ -64,15 +82,16 @@ def command_run(options, config):
 
 def command_debug(options, config):
     command_build(options, config)
-    # run gdb
+    run([config.dbg, get_target(options, config)])
 
 def command_test(options, config):
     add_default_includes(config)
     assemble_main(options, config)
     assemble_test(options, config)
-    for (objects, name) in test_objects(options.release):
-        link(objects, name, options, config)
-        run([join(get_test_path(), name)])
+    for (objects, name) in test_objects(options.release, config.main):
+        output = join(get_target_tests_path(), name)
+        link(objects, output, options, config)
+        run([output])
 
 def assemble_main(options, config):
     assemble(
@@ -94,12 +113,14 @@ def target_objects(release):
         with_ext='.o',
     )
 
-def test_objects(release):
-    ofiles = target_objects(release)
+def test_objects(release, main):
+    def not_main(ofile):
+        return filename(ofile) != filename(main)
+    ofiles = list(filter(not_main, target_objects(release)))
     return [
         (ofiles + [ofile], filename(ofile)) 
         for ofile 
-        in list_files(get_test_path(), with_ext='.o')
+        in list_files(get_target_tests_path(), with_ext='.o')
     ]
 
 def get_units_from(path, target):
@@ -142,13 +163,14 @@ def get_flags(key, config):
     ))
     
 def user_has_overriden_flags(key, config):
-    return hasattr(config, key + '_flags')
+    key += '_flags'
+    return hasattr(config, key) and getattr(config, key)
 
 def compiler_has_default_flags(config):
     return compilers[config.cc] is not None
 
 def user_flags(key, config):
-    return config[key + '_flags']
+    return getattr(config, key + '_flags')
 
 def compiler_default_flags(key, config):
     return getattr(compilers[config.cc], key)

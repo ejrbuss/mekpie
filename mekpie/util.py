@@ -1,49 +1,68 @@
 # External imports
 from sys     import stderr
 from re      import sub
-from os      import walk
+from os      import walk, mkdir
 from os.path import isfile, isdir, join, basename, splitext
+from shutil  import rmtree
 
 # Qualified local imports
 import mekpie.debug    as debug
 import mekpie.messages as messages
 
+# Debug
+# ---------------------------------------------------------------------------- #
+
 def panic(message):
     errprint(f'\n{message.strip()}\n')
     raise Exception('Debug') if debug.debug else exit(1)
 
+def log(message):
+    errprint(f' -- {message.strip()}\n') if debug.debug else None
+
 def errprint(string):
     stderr.write(string)
+
+# Collections
+# ---------------------------------------------------------------------------- #
 
 def empty(collection):
     return len(collection) == 0
 
-def rest(collection):
+def car(collection):
+    return collection[0]
+
+def cdr(collection):
     return collection[1:]
+
+def cons(collection, item):
+    return collection + [item]
 
 def flatten(collection):
     return sum(collection, [])
+
+# Strings
+# ---------------------------------------------------------------------------- #
 
 def tab(string, spaces=4):
     return sub(r'^|\n', '\n' + (spaces * ' '), string)
 
 def underline(element, collection):
-    top = ' '.join(collection)
+    top    = ' '.join(collection)
     bottom = ' '.join(underlined_collection(element, collection))
     return f'{top}\n{bottom}'
 
 def underlined_collection(underlined_element, collection):
     def underline_or_hide(element):
-        return sub(
-            r'.',
-            '^' if element == underlined_element else ' ',
-            str(element)
-        )
+        rep = '^' if element == underlined_element else ' '
+        return sub(r'.', rep, str(element))
     return map(underline_or_hide, collection)
+
+# Files
+# ---------------------------------------------------------------------------- #
 
 def list_files(path, with_filter=None, with_ext=None, recursive=False):
     if with_filter is None:
-        with_filter = lambda : True
+        with_filter = lambda _ : True
     if with_ext is not None:
         with_filter = lambda filename : filename.endswith(with_ext)
     return list(filter(with_filter, list_all_files(path)))
@@ -59,6 +78,15 @@ def list_all_files(path):
 def filename(path):
     return splitext(basename(path))[0]
 
+def file_as_str(path):
+    log(f'Reading the conents of {path}...')
+    return open(path).read()
+
+def remove_contents(path):
+    log(f'Deleting the contents of {path}...')
+    rmtree(path)
+    mkdir(path)
+
 def check_is_file(path):
     if isfile(path):
         return path
@@ -68,6 +96,9 @@ def check_is_dir(path):
     if isdir(path):
         return path
     panic(messages.directory_not_found.format(path))
+
+# Types
+# ---------------------------------------------------------------------------- #
 
 def type_name(x):
     return type(x).__name__
