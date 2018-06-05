@@ -15,7 +15,6 @@ Options:
 
 Commands:
     new <name>  Create a new mekpie project
-    init <name> Create a project in an existing directory
     test <name> Build and execute tests or test
     build       Compile the current project
     run         Build and execute main
@@ -71,8 +70,8 @@ Config error: Error while reading mek.py!
 type_error = '''
 Config error: Invalid type!
 
-  Expected `{}` to be of type: {}
-  Instead found a value of type: {}
+    Expected `{}` to be of type: {}
+    Instead found a value of type: {}
 {}
 '''
 
@@ -82,4 +81,11 @@ File not found: Could not find "{}"!
 
 directory_not_found = '''
 Directory not found: Could not find "{}"!
+'''
+
+compiler_flag_error = '''
+Flags not found: Could not find compiler flag for "{}" with purpose "{}"
+
+    Add the following entry to mek.py to include the correct flag:
+    {}
 '''

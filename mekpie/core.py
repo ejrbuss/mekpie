@@ -1,5 +1,5 @@
 # External imports
-from os  import curdir
+from os  import curdir, chdir
 from sys import argv
 
 # Qualified local imports
@@ -22,6 +22,8 @@ def handle_options(options):
 def prepare_for_command(options):
     if options.developer:
         enable_developer_mode()
+    if options.changedir:
+        chdir(options.name)
 
 def perform_command(options):
     if options.command is None:

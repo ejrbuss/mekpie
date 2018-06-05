@@ -35,3 +35,7 @@ def get_target_tests_path():
 
 def get_main_path(main):
     return join(get_src_path(), main)
+
+def get_target_build_path(release):
+    return get_target_release_path() if release else get_target_debug_path()
+    

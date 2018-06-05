@@ -43,6 +43,7 @@ def default_options():
         verbose   = False,
         release   = False,
         developer = False,
+        changedir = False,
         command   = None,
         name      = '',
     )._asdict()
@@ -53,6 +54,7 @@ def default_command_line_options():
         ('verbose',       ['-v', '--verbose']),
         ('release',       ['-r', '--release']),
         ('developer',     ['-d', '--developer']),
+        ('changedir',     ['-c', '--changedir']),
         (command_help,    ['-h', '--help', 'help']),
         (command_version, ['-V', '--version', 'version']),
         (command_new,     ['new']),

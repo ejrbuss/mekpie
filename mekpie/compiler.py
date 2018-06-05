@@ -1,15 +1,187 @@
-from .util import panic
+# External imports
+from collections import namedtuple
+from subprocess  import run
+from os.path     import basename, join, abspath
+
+# Qualified local imports
+import mekpie.messages as messages
+
+# Local imports
+from .util      import panic, list_files, flatten, filename
+from .structure import (
+    get_src_path, 
+    get_test_path, 
+    get_target_build_path,
+    get_target_tests_path,
+)
+
+CompilerFlags = namedtuple('CompilerFlags', [
+    'output',       # Output flag format
+    'include',      # Include flag format
+    'libs',         # library flag format
+    'warning',      # Enable warnings
+    'strict',       # Enable error on warning
+    'assemble',     # Flags specific to assembly
+    'debug',        # Enable debugging symbols
+    'optimization', # Enable optimizations
+    'custom',       # Additional custom flags
+])
+
+compilers = {
+    # Compiler flag configuration for gcc
+    'gcc' : CompilerFlags(
+        output       = lambda path : [f'-o', path],
+        include      = lambda path : [f'-I', path],
+        libs         = lambda lib : [f'-l{lib}'],
+        warning      = ['-Wall', '-Wpedantic', '-Wextra'],
+        strict       = ['-Werror'],
+        assemble     = ['-c'],
+        debug        = ['-g'],
+        optimization = ['-O'],
+        custom       = [],
+    ),
+}
 
 def command_build(options, config):
-    panic(f'command_build:\n{options}\n{config}')
+    add_default_includes(config)
+    assemble_main(options, config)
+    link(
+        target_objects(options.release), 
+        get_target(options, config), 
+        options, 
+        config,
+    )
+
+def add_default_includes(config):
+    config.includes.append('includes')
+
+def get_target(options, config):
+    return join(get_target_build_path(options.release), filename(config.main))
 
 def command_run(options, config):
-    panic(f'command_run:\n{options}\n{config}')
+    command_build(options, config)
+    run([get_target(options, config)])
 
 def command_debug(options, config):
-    panic(f'command_debug:\n{options}\n{config}')
+    command_build(options, config)
+    # run gdb
 
 def command_test(options, config):
-    panic(f'command_test:\n{options}\n{config}')
+    add_default_includes(config)
+    assemble_main(options, config)
+    assemble_test(options, config)
+    for (objects, name) in test_objects(options.release):
+        link(objects, name, options, config)
+        run([join(get_test_path(), name)])
 
-def cc(libs, includes, flags, cfile, out)
+def assemble_main(options, config):
+    assemble(
+        get_units_from(get_src_path(), get_target_build_path(options.release)), 
+        options, 
+        config
+    )
+
+def assemble_test(options, config):
+    assemble(
+        get_units_from(get_test_path(), get_target_tests_path()), 
+        options, 
+        config
+    )
+
+def target_objects(release):
+    return list_files(
+        get_target_build_path(release), 
+        with_ext='.o',
+    )
+
+def test_objects(release):
+    ofiles = target_objects(release)
+    return [
+        (ofiles + [ofile], filename(ofile)) 
+        for ofile 
+        in list_files(get_test_path(), with_ext='.o')
+    ]
+
+def get_units_from(path, target):
+    return [get_unit(cfile, target) for cfile in list_files(
+        path, 
+        with_ext='.c', 
+        recursive=True
+    )]
+
+def get_unit(cfile, target):
+    ofile = join(target, basename(cfile).replace('.c', '.o'))
+    return (cfile, ofile)
+
+def derive_flags(options, config, assemble=False):
+    debug   = options.command == command_debug
+    release = options.release
+    return CompilerFlags(
+        # Config Derived flags
+        include = flatten(map(get_flags('include', config), config.includes)),
+        libs    = flatten(map(get_flags('libs',    config), config.libs)),
+        # Compiler derived flags
+        output       = get_flags('output',       config),
+        warning      = get_flags('warning',      config),
+        strict       = get_flags('strict',       config),
+        assemble     = get_flags('assemble',     config) if assemble else [],
+        debug        = get_flags('debug',        config) if debug    else [],
+        optimization = get_flags('optimization', config) if release  else [],
+        custom       = get_flags('custom',       config),
+    )
+
+def get_flags(key, config):
+    if user_has_overriden_flags(key, config):
+        return user_flags(key, config)
+    if compiler_has_default_flags(config):
+        return compiler_default_flags(key, config)
+    panic(messages.compiler_flag_error.format(
+        config.cc,
+        key,
+        key + '_flag = []',
+    ))
+    
+def user_has_overriden_flags(key, config):
+    return hasattr(config, key + '_flags')
+
+def compiler_has_default_flags(config):
+    return compilers[config.cc] is not None
+
+def user_flags(key, config):
+    return config[key + '_flags']
+
+def compiler_default_flags(key, config):
+    return getattr(compilers[config.cc], key)
+
+def assemble(units, options, config):
+    for (cfile, ofile) in units:
+        compiler_call(
+            cmd    = config.cc,
+            inputs = [cfile],
+            output = ofile,
+            flags  = derive_flags(options, config, assemble=True),
+        )
+
+def link(objects, output, options, config):
+    compiler_call(
+        cmd    = config.cc,
+        inputs = objects,
+        output = output,
+        flags  = derive_flags(options, config),
+    )
+
+def compiler_call(cmd, inputs, output, flags):
+    run([cmd] + inputs + serialize_flags(flags, output))
+
+def serialize_flags(flags, output):
+    return flatten([
+        flags.output(output),
+        flags.include,
+        flags.libs,
+        flags.warning,
+        flags.strict,
+        flags.assemble,
+        flags.debug,
+        flags.optimization,
+        flags.custom,
+    ])

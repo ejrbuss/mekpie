@@ -32,7 +32,7 @@ def command_new(options):
     create_tests()
     create_includes()
     create_target()
-    config = read_config(get_mekpy_source(name))
+    read_config(get_mekpy_source(name))
 
 def check_name(name):
     if isdir(name):
@@ -77,4 +77,4 @@ def command_init(options):
     create_tests()
     create_includes()
     create_target()
-    config = read_config(get_mekpy_source(name))
+    read_config(get_mekpy_source(name))

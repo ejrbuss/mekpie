@@ -5,6 +5,7 @@ Options = namedtuple('Options', [
     'verbose',   # -v --verbose
     'release',   # -r --release
     'developer', # -d --developer
+    'changedir', # -c --changedir
     'command',   # new, init, build, run, test, debug
     'name',      # name argument
 ])

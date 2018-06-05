@@ -1,7 +1,8 @@
 # External imports
 from sys     import stderr
 from re      import sub
-from os.path import isfile, isdir
+from os      import walk
+from os.path import isfile, isdir, join, basename, splitext
 
 # Qualified local imports
 import mekpie.debug    as debug
@@ -20,6 +21,9 @@ def empty(collection):
 def rest(collection):
     return collection[1:]
 
+def flatten(collection):
+    return sum(collection, [])
+
 def tab(string, spaces=4):
     return sub(r'^|\n', '\n' + (spaces * ' '), string)
 
@@ -36,6 +40,24 @@ def underlined_collection(underlined_element, collection):
             str(element)
         )
     return map(underline_or_hide, collection)
+
+def list_files(path, with_filter=None, with_ext=None, recursive=False):
+    if with_filter is None:
+        with_filter = lambda : True
+    if with_ext is not None:
+        with_filter = lambda filename : filename.endswith(with_ext)
+    return list(filter(with_filter, list_all_files(path)))
+
+def list_all_files(path):
+    return flatten([[join(pre, post)
+            for post 
+            in posts] 
+        for (pre, _, posts) 
+        in walk(path)
+    ])
+
+def filename(path):
+    return splitext(basename(path))[0]
 
 def check_is_file(path):
     if isfile(path):

@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "extra.h"
 
-int main(int argc, char ** argv) {
-    puts("Hello, World!");
+int main() {
+    extra();
     return EXIT_SUCCESS;
 }

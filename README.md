@@ -46,10 +46,6 @@ main = './src/project.c'
 flags = [...]
 # libraries to be linked
 libs = [...]
-# enable/disable terminal colors
-color = False
-# optimization mode for release
-optimizations = '-0s'
 # provide defines on compilication
 define = [
     'MEK_PY=1'
@@ -82,3 +78,12 @@ Commands:
     clean       Remove the target directory
     run         Build and execute main
 ```
+
+# Future Additions
+
+ - `init` command for initializing an already created directory
+ - `clean` command for a clean build 
+ - `-s --strict` option for errors
+ - Config hook for compiler flags, maybe default config if `cc='gcc'`
+ - Partial compilations (compare file dates, log, or somethign similar) 
+ - Colored output

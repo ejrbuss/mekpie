@@ -49,7 +49,7 @@ def check_includes(includes):
     check_type('includes', includes, list)
     for directory in includes:
         check_type('includes directory', directory, str)
-        check_is_dir(directroy)
+        check_is_dir(directory)
 
 def check_libs(libs):
     check_type('libs', libs, list)
@@ -64,7 +64,7 @@ def check_dbg(dbg):
 
 def check_type(name, value, expected_type):
     if type(value) != expected_type:
-        panic(messages.format(
+        panic(messages.type_error.format(
             name,
             expected_type.__name__,
             type_name(value),
@@ -78,7 +78,7 @@ def get_description(name):
         'includes' : '`includes` specifies any additional include directories',
         'libs'     : '`libs` speicfies and libraries to load',
         'cc'       : '`cc` specifies the c compiler to use',
-        'dbg'      : '`dbg` specifies the debugger to use'
+        'dbg'      : '`dbg` specifies the debugger to use',
     }[name]
 
 def config_path(project_directory):
