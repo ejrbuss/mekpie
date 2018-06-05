@@ -15,7 +15,6 @@ project/          # the project directory
         debug/    # stores the debug binary
         release/  # stores the release binary
         tests/    # stores the test binaries
-        cache/    # stores intermediate .o files
     includes/     # stores all project .h files
     src/          # stores all project .c files
         project.c # should contain `main`
@@ -42,18 +41,8 @@ name = 'project'
 cc = 'gcc'
 # the .c file containing `main`
 main = './src/project.c'
-# additional compiler flags
-flags = [...]
 # libraries to be linked
 libs = [...]
-# provide defines on compilication
-define = [
-    'MEK_PY=1'
-]
-# provide undefines on compiliation
-undefine = [
-    'NOTMEK_PY'
-]
 ```
 
 ## Commands
@@ -78,12 +67,3 @@ Commands:
     clean       Remove the target directory
     run         Build and execute main
 ```
-
-# Future Additions
-
- - `init` command for initializing an already created directory
- - `clean` command for a clean build 
- - `-s --strict` option for errors
- - Config hook for compiler flags, maybe default config if `cc='gcc'`
- - Partial compilations (compare file dates, log, or somethign similar) 
- - Colored output
