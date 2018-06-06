@@ -1,13 +1,14 @@
 from collections import namedtuple
 
 Options = namedtuple('Options', [
-    'quiet',     # -q --quiet
-    'verbose',   # -v --verbose
-    'release',   # -r --release
-    'developer', # -d --developer
-    'changedir', # -c --changedir
-    'command',   # new, init, build, run, test, debug
-    'name',      # name argument
+    'quiet',       # -q --quiet
+    'verbose',     # -v --verbose
+    'release',     # -r --release
+    'developer',   # -d --developer
+    'changedir',   # -c --changedir
+    'command',     # new, init, build, run, test, debug
+    'subargs',     # <command args>
+    'programargs', # - <program args>
 ])
 
 Config = namedtuple('Config', [
@@ -40,7 +41,7 @@ MAIN = '''
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char ** argv) {
+int main() {
     puts("Hello, World!");
     return EXIT_SUCCESS;
 }

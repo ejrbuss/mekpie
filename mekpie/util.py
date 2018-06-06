@@ -29,13 +29,17 @@ def empty(collection):
     return len(collection) == 0
 
 def car(collection):
-    return collection[0]
+    if not empty(collection):
+        return collection[0]
 
 def cdr(collection):
     return collection[1:]
 
 def cons(collection, item):
     return collection + [item]
+
+def shift(collection):
+    return collection.pop(0)
 
 def flatten(collection):
     return sum(collection, [])

@@ -7,7 +7,15 @@ from os.path     import basename, join, abspath
 import mekpie.messages as messages
 
 # Local imports
-from .util      import panic, list_files, flatten, filename, remove_contents
+from .util      import (
+    panic, 
+    car,
+    list_files, 
+    flatten, 
+    filename, 
+    remove_contents, 
+    empty,
+)
 from .structure import (
     get_src_path, 
     get_test_path, 
@@ -88,7 +96,7 @@ def command_test(options, config):
     add_default_includes(config)
     assemble_main(options, config)
     assemble_test(options, config)
-    for (objects, name) in test_objects(options.release, config.main):
+    for (objects, name) in test_objects(options, config.main):
         output = join(get_target_tests_path(), name)
         link(objects, output, options, config)
         run([output])
@@ -113,15 +121,24 @@ def target_objects(release):
         with_ext='.o',
     )
 
-def test_objects(release, main):
+def test_objects(options, main):
     def not_main(ofile):
         return filename(ofile) != filename(main)
-    ofiles = list(filter(not_main, target_objects(release)))
-    return [
+    ofiles  = list(filter(not_main, target_objects(options.release)))
+    objects = [
         (ofiles + [ofile], filename(ofile)) 
         for ofile 
         in list_files(get_target_tests_path(), with_ext='.o')
+        if not test_name(options) or filename(ofile) == test_name(options)
     ]
+    if empty(objects) and not test_name(options):
+        panic(messages.no_tests)
+    if empty(objects):
+        panic(messages.no_tests_with_name.format(test_name(options)))
+    return objects
+
+def test_name(options):
+    return car(options.subargs)
 
 def get_units_from(path, target):
     return [get_unit(cfile, target) for cfile in list_files(

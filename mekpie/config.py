@@ -1,7 +1,5 @@
 # External imports
-from os.path import join, basename, abspath
-from os      import curdir
-from sys     import exc_info
+from os.path import join
 
 # Qualified local imports
 import mekpie.messages as messages

@@ -85,8 +85,26 @@ Directory not found: Could not find "{}"!
 '''
 
 compiler_flag_error = '''
-Flags not found: Could not find compiler flag for "{}" with purpose "{}"
+Flags not found: Could not find compiler flag for "{}" with purpose "{}"!
 
     Add the following entry to mek.py to include the correct flag:
     {}
+'''
+
+no_tests = '''
+No tests found: Could not find any tests to run in /tests/!
+
+    Try adding a c source file with a `main` function to /tests/
+'''
+
+no_tests_with_name = '''
+No tests found: Could not find any test with the name {} in /tests/!
+
+     Check that you spelled the test name correctly.
+'''
+
+api_no_options = '''
+No options: API call to mekpie was made without an `Options` instance!
+
+     Call `core.mekpie` with an instance of `definitions.Options`
 '''

@@ -5,6 +5,7 @@ import mekpie.debug    as debug
 # Local imports
 from .definitions import Options
 from .util import (
+    car,
     empty,
     panic,
     tab,
@@ -28,44 +29,36 @@ def command_help(options):
 def command_version(options):
     print(messages.version)
 
-def parse(args):
-    options = default_options()
-    for arg in args:
-        for try_option in available_options():
-            if try_option(arg, options):
-                break
-        else:
-            try_name(arg, options)
-    return Options(**options)
-
 def default_options():
     return Options(
-        quiet     = False,
-        verbose   = False,
-        release   = False,
-        developer = False,
-        changedir = False,
-        command   = None,
-        name      = '',
+        quiet       = False,
+        verbose     = False,
+        release     = False,
+        developer   = False,
+        changedir   = False,
+        command     = None,
+        subargs     = [],
+        programargs = [],
     )._asdict()
 
 def available_options():
-    return [add_option(option, aliases) for (option, aliases) in [
-        ('quiet',         ['-q', '--quiet']),
-        ('verbose',       ['-v', '--verbose']),
-        ('release',       ['-r', '--release']),
-        ('developer',     ['-d', '--developer']),
-        ('changedir',     ['-c', '--changedir']),
-        (command_help,    ['-h', '--help', 'help']),
-        (command_version, ['-V', '--version', 'version']),
-        (command_new,     ['new']),
-        (command_init,    ['init']),
-        (command_clean,   ['clean']),
-        (command_build,   ['build']),
-        (command_run,     ['run']),
-        (command_test,    ['test']),
-        (command_debug,   ['debug']),
-    ]]
+    return [
+        flag('quiet',               ['-q', '--quiet']),
+        flag('verbose',             ['-v', '--verbose']),
+        flag('release',             ['-r', '--release']),
+        flag('developer',           ['-d', '--developer']),
+        arg('changedir',         2, ['-c', '--changedir']),
+        arg('programargs',     100, ['-']),
+        command(command_help,    1, ['-h', '--help', 'help']),
+        command(command_version, 1, ['-V', '--version', 'version']),
+        command(command_new,     2, ['new']),
+        command(command_init,    1, ['init']),
+        command(command_clean,   1, ['clean']),
+        command(command_build,   1, ['build']),
+        command(command_run,     1, ['run']),
+        command(command_test,    2, ['test']),
+        command(command_debug,   1, ['debug']),
+    ]
 
 def pre_config_commands():
     return [
@@ -75,40 +68,58 @@ def pre_config_commands():
         command_version,
     ]
 
-def add_option(option, aliases):
-    def try_option(arg, options):
-        if arg in aliases:
-            if is_flag(option):
-                add_flag(option, options)
-            if is_command(option):
-                add_command(option, options)
-            return True
-    return try_option
+def parse(args):
+    options = default_options()
+    while not empty(args):
+        for option in available_options():
+            new_args = option(args, options)
+            if new_args is not None:
+                args = new_args
+                break
+        else:
+            argument_error(messages.unknown_argument, car(args))
+    return Options(**options)
 
-def is_flag(option):
-    return type(option) == str
+def option(aliases, n, handler):
+    def parse_option(args, options):
+        if car(args) in aliases:
+            handler(args[1:n], options)
+            return args[n:]
+    return parse_option
 
-def is_command(option):
-    return callable(option)
+def flag(name, aliases):
+    return option(
+        aliases = aliases, 
+        n       = 1, 
+        handler = lambda _, options : add_arg(name, True, options),
+    )
 
-def add_flag(flag, options):
-    if options[flag]:
-        argument_error(messages.repeated_option.format(flag), flag)
+def arg(name, n, aliases):
+    return option(
+        aliases = aliases, 
+        n       = n, 
+        handler = lambda args, options : add_arg(name, args, options),
+    )
+
+def command(command, n, aliases):
+    return option(
+        aliases = aliases, 
+        n       = n, 
+        handler = lambda args, options : add_command(command, args, options),
+    )
+
+def add_arg(name, arg, options):
+    if options[name]:
+        argument_error(messages.repeated_option.format(name), name)
     else:
-        options[flag] = True
+        options[name] = arg
 
-def add_command(command, options):
+def add_command(command, subargs, options):
     if options['command']:
         argument_error(messages.too_many_arguments, command)
     else:
         options['command'] = command
-
-def try_name(arg, options):
-    if not options['command']:
-        argument_error(messages.unknown_argument, arg)
-    if options['name']:
-        argument_error(messages.too_many_arguments, arg)
-    options['name'] = arg
+        options['subargs'] = subargs 
 
 def argument_error(message, arg):
     args = ['mekpie'] + debug.args

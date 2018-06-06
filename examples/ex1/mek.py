@@ -1,9 +1,10 @@
+
 # This is a standard configuration file for mekpie
 
 # the name of the project
-name = 'mekpie'
+name = 'ex1'
 # the .c file containing `main`
-main = 'main.c'
+main = 'ex1.c'
 # any additional include directories
 includes = []
 # any libraries to load

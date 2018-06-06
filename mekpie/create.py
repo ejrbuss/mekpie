@@ -6,7 +6,7 @@ from os      import mkdir
 import mekpie.messages as messages
 
 # Local imports
-from .util        import panic, empty
+from .util        import panic, empty, car
 from .config      import read_config
 from .definitions import DEFAULT_MEKPY, MAIN
 from .structure   import (
@@ -24,7 +24,7 @@ from .structure   import (
 )
 
 def command_new(options):
-    name = options.name
+    name = project_name(options)
     check_name(name)
     create_project_directory(name)
     create_mekpy(name)
@@ -34,11 +34,21 @@ def command_new(options):
     create_target()
     read_config(get_mekpy_source(name))
 
+def command_init(options):
+    name = project_name(options)
+    check_name(name)
+    create_mekpy(name)
+    create_src(name)
+    create_tests()
+    create_includes()
+    create_target()
+    read_config(get_mekpy_source(name))
+
 def check_name(name):
+    if not name:
+        panic(messages.name_cannot_be_empty)
     if isdir(name):
         panic(messages.name_cannot_already_exist.format(name))
-    if empty(name):
-        panic(messages.name_cannot_be_empty)
 
 def create_project_directory(name):
     set_project_path(name)
@@ -63,18 +73,11 @@ def create_target():
     mkdir(get_target_release_path())
     mkdir(get_target_tests_path())
 
-def get_mekpy_source(name):
-    return DEFAULT_MEKPY.format(name, name + '.c')
+def project_name(options):
+    return car(options.subargs)
 
 def get_main_source():
-    return MAIN
+    return MAIN + '\n'
 
-def command_init(options):
-    name = options.name
-    check_name(name)
-    create_mekpy(name)
-    create_src(name)
-    create_tests()
-    create_includes()
-    create_target()
-    read_config(get_mekpy_source(name))
+def get_mekpy_source(name):
+    return DEFAULT_MEKPY.format(name, name + '.c')
