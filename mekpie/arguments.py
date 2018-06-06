@@ -6,6 +6,7 @@ import mekpie.debug    as debug
 from .definitions import Options
 from .util import (
     car,
+    shift,
     empty,
     panic,
     tab,
@@ -48,7 +49,7 @@ def available_options():
         flag('release',             ['-r', '--release']),
         flag('developer',           ['-d', '--developer']),
         arg('changedir',         2, ['-c', '--changedir']),
-        arg('programargs',     100, ['-']),
+        arg('programargs',     100, ['--']),
         command(command_help,    1, ['-h', '--help', 'help']),
         command(command_version, 1, ['-V', '--version', 'version']),
         command(command_new,     2, ['new']),
@@ -72,9 +73,7 @@ def parse(args):
     options = default_options()
     while not empty(args):
         for option in available_options():
-            new_args = option(args, options)
-            if new_args is not None:
-                args = new_args
+            if option(args, options):
                 break
         else:
             argument_error(messages.unknown_argument, car(args))
@@ -84,7 +83,8 @@ def option(aliases, n, handler):
     def parse_option(args, options):
         if car(args) in aliases:
             handler(args[1:n], options)
-            return args[n:]
+            shift(args, n)
+            return True
     return parse_option
 
 def flag(name, aliases):
@@ -119,7 +119,7 @@ def add_command(command, subargs, options):
         argument_error(messages.too_many_arguments, command)
     else:
         options['command'] = command
-        options['subargs'] = subargs 
+        options['subargs'] = subargs
 
 def argument_error(message, arg):
     args = ['mekpie'] + debug.args

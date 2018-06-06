@@ -86,7 +86,7 @@ def get_target(options, config):
 
 def command_run(options, config):
     command_build(options, config)
-    run([get_target(options, config)])
+    run([get_target(options, config)] + options.programargs)
 
 def command_debug(options, config):
     command_build(options, config)

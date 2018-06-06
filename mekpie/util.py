@@ -38,8 +38,10 @@ def cdr(collection):
 def cons(collection, item):
     return collection + [item]
 
-def shift(collection):
-    return collection.pop(0)
+def shift(collection, n=1):
+    for _ in range(n):
+        if not empty(collection):
+            collection.pop(0)
 
 def flatten(collection):
     return sum(collection, [])
