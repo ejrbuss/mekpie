@@ -5,8 +5,8 @@
 name = 'ex1'
 # the .c file containing `main`
 main = 'ex1.c'
-# any additional include directories
-includes = []
+# any include directories
+includes = ['./includes']
 # any libraries to load
 libs = []
 # the c copmiler to use

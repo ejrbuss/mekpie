@@ -37,6 +37,7 @@ def default_options():
         release     = False,
         developer   = False,
         changedir   = False,
+        debug       = False,
         command     = None,
         subargs     = [],
         programargs = [],
@@ -77,7 +78,11 @@ def parse(args):
                 break
         else:
             argument_error(messages.unknown_argument, car(args))
+    add_debug(options)
     return Options(**options)
+
+def add_debug(options):
+    options['debug'] = options['command'] == command_debug
 
 def option(aliases, n, handler):
     def parse_option(args, options):

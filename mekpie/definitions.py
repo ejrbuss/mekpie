@@ -1,3 +1,4 @@
+# External Imports
 from collections import namedtuple
 
 Options = namedtuple('Options', [
@@ -7,17 +8,31 @@ Options = namedtuple('Options', [
     'developer',   # -d --developer
     'changedir',   # -c --changedir
     'command',     # new, init, build, run, test, debug
+    'debug',       # debug
     'subargs',     # <command args>
     'programargs', # - <program args>
 ])
 
 Config = namedtuple('Config', [
-    'name',
-    'main',
-    'includes',
-    'libs',
-    'cc',
-    'dbg',
+    'name',     # Project name
+    'main',     # Entry point
+    'includes', # Header folders
+    'libs',     # Libraries to link
+    'cc',       # C Compiler
+    'dbg',      # Debugger
+    'flags',    # Custom flags
+])
+
+CompilerFlags = namedtuple('CompilerFlags', [
+    'output',       # Output flag format
+    'include',      # Include flag format
+    'libs',         # library flag format
+    'warning',      # Enable warnings
+    'strict',       # Enable error on warning
+    'assemble',     # Flags specific to assembly
+    'debug',        # Enable debugging symbols
+    'optimization', # Enable optimizations
+    'custom',       # Additional custom flags
 ])
 
 DEFAULT_MEKPY='''
@@ -27,8 +42,8 @@ DEFAULT_MEKPY='''
 name = '{}'
 # the .c file containing `main`
 main = '{}'
-# any additional include directories
-includes = []
+# any include directories
+includes = ['./includes']
 # any libraries to load
 libs = []
 # the c copmiler to use
