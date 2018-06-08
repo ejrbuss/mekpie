@@ -2,7 +2,8 @@
 from sys     import stderr
 from re      import sub
 from os      import walk, mkdir
-from os.path import isfile, isdir, join, basename, splitext
+from os.path import isfile, isdir, join, basename, splitext, exists
+from filecmp import dircmp
 from shutil  import rmtree
 
 # Qualified local imports
@@ -21,6 +22,7 @@ def log(message):
 
 def errprint(string):
     stderr.write(string)
+    stderr.flush()
 
 # Collections
 # ---------------------------------------------------------------------------- #
@@ -66,6 +68,14 @@ def underlined_collection(underlined_element, collection):
 # Files
 # ---------------------------------------------------------------------------- #
 
+def smkdir(path):
+    if not exists(path):
+        mkdir(path)
+
+def srmtree(path):
+    if exists(path):
+        rmtree(path)
+
 def list_files(path, with_filter=None, with_ext=None, recursive=False):
     if with_filter is None:
         with_filter = lambda _ : True
@@ -90,8 +100,8 @@ def file_as_str(path):
 
 def remove_contents(path):
     log(f'Deleting the contents of {path}...')
-    rmtree(path)
-    mkdir(path)
+    srmtree(path)
+    smkdir(path)
 
 def check_is_file(path):
     if isfile(path):
@@ -102,6 +112,16 @@ def check_is_dir(path):
     if isdir(path):
         return path
     panic(messages.directory_not_found.format(path))
+
+def same_dir(dir1, dir2):
+    def recursive(dcmp):
+        if dcmp.diff_files:
+            return False
+        return all([recursive(sub_dcmp) 
+            for sub_dcmp 
+            in dcmp.subdirs.values()
+        ])
+    return recursive(dircmp(dir1, dir2))
 
 # Types
 # ---------------------------------------------------------------------------- #

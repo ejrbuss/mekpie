@@ -1,12 +1,13 @@
 # External imports
 from os.path import isdir, curdir, join
-from os      import mkdir
+from os      import chdir
+from os.path import basename, abspath, exists
 
 # Qualified local imports
 import mekpie.messages as messages
 
 # Local imports
-from .util        import panic, empty, car
+from .util        import panic, empty, car, smkdir
 from .config      import read_config
 from .definitions import DEFAULT_MEKPY, MAIN
 from .structure   import (
@@ -32,10 +33,12 @@ def command_new(options):
     create_tests()
     create_includes()
     create_target()
+    chdir(get_project_path())
+    set_project_path(curdir)
     read_config(get_mekpy_source(name))
 
 def command_init(options):
-    name = project_name(options)
+    name = basename(abspath(curdir))
     check_name(name)
     create_mekpy(name)
     create_src(name)
@@ -52,26 +55,30 @@ def check_name(name):
 
 def create_project_directory(name):
     set_project_path(name)
-    mkdir(get_project_path())
+    smkdir(get_project_path())
 
 def create_mekpy(name):
-    open(get_mekpy_path(), 'w+').write(get_mekpy_source(name))
+    if not exists(get_mekpy_path()):
+        with open(get_mekpy_path(), 'w+') as rsc:
+            rsc.write(get_mekpy_source(name))
 
 def create_src(name):
-    mkdir(get_src_path())
-    open(get_main_path(name + '.c'), 'w+').write(get_main_source())
+    smkdir(get_src_path())
+    if not exists(get_main_path(name + '.c')):
+        with open(get_main_path(name + '.c'), 'w+') as rsc:
+            rsc.write(get_main_source())
 
 def create_tests():
-    mkdir(get_test_path())
+    smkdir(get_test_path())
 
 def create_includes():
-    mkdir(get_includes_path())
+    smkdir(get_includes_path())
 
 def create_target():
-    mkdir(get_target_path())
-    mkdir(get_target_debug_path())
-    mkdir(get_target_release_path())
-    mkdir(get_target_tests_path())
+    smkdir(get_target_path())
+    smkdir(get_target_debug_path())
+    smkdir(get_target_release_path())
+    smkdir(get_target_tests_path())
 
 def project_name(options):
     return car(options.subargs)
