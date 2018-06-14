@@ -18,7 +18,8 @@ Config = namedtuple('Config', [
     'main',     # Entry point
     'includes', # Header folders
     'libs',     # Libraries to link
-    'cc',       # C Compiler
+    'cc',       # C Compiler Configuration
+    'cmd',      # The C Compiler command
     'dbg',      # Debugger
     'flags',    # Custom flags
 ])
@@ -35,7 +36,7 @@ CompilerFlags = namedtuple('CompilerFlags', [
     'custom',       # Additional custom flags
 ])
 
-MekpieResult = namedtuple('APIOutput', [
+MekpieResult = namedtuple('MekpieResult', [
     'commands',   # An array of commands run
 ])
 
@@ -58,8 +59,10 @@ main = '{}'
 includes = ['./includes']
 # any libraries to load
 libs = []
-# the c copmiler to use
-cc = 'gcc'
+# the c compiler configuration to use (default, gcc, clang, cl)
+cc = '{}'
+# the c compiler command to use on the command line
+cmd = '{}'
 # the debugger to use
 dbg = 'gdb'
 '''

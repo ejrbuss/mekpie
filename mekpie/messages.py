@@ -50,7 +50,7 @@ too_many_arguments = 'Unexpected argument: Too many arguments provided!'
 unknown_argument = 'Unexpected argument: Unknown argument provided!'
 
 name_cannot_already_exist = '''
-Invalid argument: Cannot create a project in a directory that already exists!
+Invalid Argument: Cannot create a project in a directory that already exists!
 
     The directory "./{}" already exists. If you want to use this folder with
     mekpie, navigate within the folder, and run the `init` command.
@@ -66,6 +66,13 @@ Missing argument: You must provide the positional argument `name`!
 error_reading_mekpy = '''
 Config error: Error while reading mek.py!
 {}
+'''
+
+compiler_config_error = '''
+Config error: Invalid compiler configuration!
+
+    Exptected one of the following: {}
+    Instead found a value of: {}
 '''
 
 type_error = '''
@@ -116,4 +123,17 @@ Build failed: the following call to the compiler failed:
 
 And the following errors were produced:
     {}
+'''
+
+failed_program_call = '''
+Call failed: the following program call failed:
+
+    {}
+'''
+
+failed_autodetect = '''
+Compiler detection failed: could not auto-detect a c compiler
+
+    To help mekpie find a c compiler ensure that `cc` is aliased to a valid
+    c ompiler.
 '''

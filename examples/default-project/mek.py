@@ -9,7 +9,9 @@ main = 'default-project.c'
 includes = ['./includes']
 # any libraries to load
 libs = []
-# the c copmiler to use
-cc = 'gcc'
+# the c compiler configuration to use (default, gcc, clang, cl)
+cc = 'clang'
+# the c compiler command to use on the command line
+cmd = 'cc'
 # the debugger to use
 dbg = 'gdb'

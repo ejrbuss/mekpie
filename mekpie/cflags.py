@@ -9,8 +9,8 @@ from .definitions import CompilerFlags
 from .util        import panic, flatten
 
 compilers = {
-    # Compiler flag configuration for gcc
-    'gcc' : CompilerFlags(
+    # Default compiler flags
+    'default' : CompilerFlags(
         output       = lambda path : [f'-o', path],
         include      = lambda path : [f'-I', path],
         libs         = lambda lib : [f'-l{lib}'],
@@ -23,6 +23,30 @@ compilers = {
     ),
     # Compiler flag configuration for clang
     'clang' : CompilerFlags(
+        output       = lambda path : [f'-o', path],
+        include      = lambda path : [f'-I', path],
+        libs         = lambda lib : [f'-l{lib}'],
+        warning      = ['-Wall', '-Wpedantic', '-Wextra'],
+        strict       = ['-Werror'],
+        assemble     = ['-c'],
+        debug        = ['-g'],
+        optimization = ['-O'],
+        custom       = [],
+    ),
+    # Compiler flag configuration for gcc
+    'gcc' : CompilerFlags(
+        output       = lambda path : [f'-o', path],
+        include      = lambda path : [f'-I', path],
+        libs         = lambda lib : [f'-l{lib}'],
+        warning      = ['-Wall', '-Wpedantic', '-Wextra'],
+        strict       = ['-Werror'],
+        assemble     = ['-c'],
+        debug        = ['-g'],
+        optimization = ['-O'],
+        custom       = [],
+    ),
+    # Compiler flag configuration for cl
+    'cl' : CompilerFlags(
         output       = lambda path : [f'-o', path],
         include      = lambda path : [f'-I', path],
         libs         = lambda lib : [f'-l{lib}'],

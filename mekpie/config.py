@@ -8,6 +8,7 @@ import mekpie.messages as messages
 from .definitions import Config, CompilerFlags
 from .util        import panic, tab, check_is_file, check_is_dir, type_name
 from .structure   import get_main_path
+from .cflags      import compilers
 
 def read_config(source):
     config_dict = {}
@@ -23,7 +24,8 @@ def config_from_dict(config_dict):
         main     = config_dict.get('main',     None),
         includes = config_dict.get('includes', ['./includes']),
         libs     = config_dict.get('libs',     []),
-        cc       = config_dict.get('cc',       'gcc'),
+        cc       = config_dict.get('cc',       None),
+        cmd      = config_dict.get('cmd',      None),
         dbg      = config_dict.get('dbg',      'gdb'),
         flags    = CompilerFlags(
             output       = config_dict.get('output_flags',       None),
@@ -44,6 +46,7 @@ def check_config(config):
     check_includes(config.includes)
     check_libs(config.libs)
     check_cc(config.cc)
+    check_cmd(config.cc)
     check_dbg(config.dbg)
     check_flags(config.flags)
     return config
@@ -68,6 +71,12 @@ def check_libs(libs):
 
 def check_cc(cc):
     check_type('cc', cc, str)
+    if cc not in compilers.keys():
+        compiler_list = ', '.join(compilers.keys())
+        panic(messages.compiler_config_error.format(compiler_list, cc))
+
+def check_cmd(cmd):
+    check_type('cmd', cmd, str)
 
 def check_dbg(dbg):
     check_type('dbg', dbg, str)

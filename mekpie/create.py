@@ -9,6 +9,7 @@ import mekpie.messages as messages
 # Local imports
 from .util        import panic, empty, car, smkdir
 from .config      import read_config
+from .autodetect  import autodetect_compiler
 from .definitions import DEFAULT_MEKPY, MAIN
 from .structure   import (
     set_project_path,
@@ -25,6 +26,7 @@ from .structure   import (
 )
 
 def command_new(options):
+    autodetect_compiler()
     name = project_name(options)
     check_name(name)
     create_project_directory(name)
@@ -38,6 +40,7 @@ def command_new(options):
     read_config(get_mekpy_source(name))
 
 def command_init(options):
+    autodetect_compiler()
     name = basename(abspath(curdir))
     check_name(name)
     create_mekpy(name)
@@ -87,4 +90,5 @@ def get_main_source():
     return MAIN + '\n'
 
 def get_mekpy_source(name):
-    return DEFAULT_MEKPY.format(name, name + '.c')
+    cc, cmd = autodetect_compiler()
+    return DEFAULT_MEKPY.format(name, name + '.c', cc, cmd)

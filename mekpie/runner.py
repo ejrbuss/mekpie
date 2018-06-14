@@ -3,14 +3,22 @@ from subprocess import Popen, PIPE
 from select     import select
 from sys        import stdout, stderr
 
+# Qualified local imports
+import mekpie.messages as messages
+
 # Internal Imports
 from .definitions import MekpieResult, Command
-from .util        import log, car
+from .util        import panic, log, car
 
 commands = []
 
-def lrun(args, quiet=False):
-    command = capture_command(args, quiet)
+def lrun(args, quiet=False, error=True):
+    command = Command(**default_command(args))
+    try:
+        command = capture_command(args, quiet)
+    except OSError:
+        if error:
+            panic(messages.failed_program_call.format(serialize_command(args)))
     commands.append(command)
     return command
 
