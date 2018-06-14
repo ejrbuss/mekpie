@@ -76,12 +76,12 @@ def test_objects(options, main):
         (ofiles + [ofile], filename(ofile)) 
         for ofile 
         in list_files(get_target_tests_path(), with_ext='.o')
-        if not test_name(options) or filename(ofile) == test_name(options)
+        if empty(options.subargs) or filename(ofile) in options.subargs
     ]
-    if empty(objects) and not test_name(options):
+    if empty(objects) and empty(options.subargd):
         panic(messages.no_tests)
     if empty(objects):
-        panic(messages.no_tests_with_name.format(test_name(options)))
+        panic(messages.no_tests_with_name.format(', '.join(options.subargs)))
     return objects
 
 def assemble_main(options, config):
@@ -97,9 +97,6 @@ def assemble_test(options, config):
         options,
         config,
     )
-
-def test_name(options):
-    return car(options.subargs)
 
 def get_units_from(path, target):
     return [get_unit(cfile, target) for cfile in list_files(
