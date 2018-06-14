@@ -7,16 +7,18 @@ import mekpie.debug    as debug
 import mekpie.messages as messages
 
 # Local imports
-from .util        import log, car, cdr, panic, file_as_str
+from .util        import log, car, cdr, last, panic, file_as_str
 from .config      import read_config, config_path
 from .arguments   import parse, pre_config_commands
-from .definitions import Options
+from .definitions import MekpieResult, Options
+from .runner      import commands
 
 def mekpie(options):
     if type(options) != Options:
         panic(messages.api_no_options)
     prepare_for_command(options)
     perform_command(options)
+    return log(MekpieResult(commands))
 
 def main(args=cdr(argv)):
     debug.args = args

@@ -7,6 +7,7 @@ from sys         import stdout, stderr
 import mekpie.messages as messages
 
 # Local imports
+from .runner    import lrun
 from .cflags    import derive_flags
 from .util      import (
     panic, 
@@ -18,8 +19,6 @@ from .util      import (
     filename, 
     remove_contents, 
     empty,
-    lrun,
-    serialize_command,
 )
 from .structure import (
     get_src_path, 
@@ -145,9 +144,9 @@ def link(objects, output, options, config):
     )
 
 def compiler_call(options, cmd, inputs, output, flags):
-    proc = lrun([cmd] + inputs + flags, capture=True)
+    proc = lrun([cmd] + inputs + flags, quiet=True)
     if proc.returncode != 0:
         panic(None if options.quiet else messages.failed_compiler_call.format(
-            serialize_command(proc.args), 
+            proc.sargs, 
             tab(proc.stderr)
         ))

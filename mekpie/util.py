@@ -1,11 +1,10 @@
 # External imports
-from sys        import stderr
-from re         import sub
-from os         import walk, mkdir
-from subprocess import run, PIPE
-from os.path    import isfile, isdir, join, basename, splitext, exists
-from filecmp    import dircmp
-from shutil     import rmtree
+from sys     import stderr
+from re      import sub
+from os      import walk, mkdir
+from os.path import isfile, isdir, join, basename, splitext, exists
+from filecmp import dircmp
+from shutil  import rmtree
 
 # Qualified local imports
 import mekpie.debug    as debug
@@ -37,6 +36,10 @@ def empty(collection):
 def car(collection):
     if not empty(collection):
         return collection[0]
+    
+def last(collection):
+    if not empty(collection):
+        return collection[-1]
 
 def cdr(collection):
     return collection[1:]
@@ -100,7 +103,8 @@ def filename(path):
 
 def file_as_str(path):
     log(f'Reading the conents of {path}...')
-    return open(path).read()
+    with open(path) as resource:
+        return resource.read()
 
 def remove_contents(path):
     log(f'Deleting the contents of {path}...')
@@ -126,24 +130,6 @@ def same_dir(dir1, dir2):
             in dcmp.subdirs.values()
         ])
     return recursive(dircmp(dir1, dir2))
-
-# Processes
-# ---------------------------------------------------------------------------- #
-
-def lrun(args, capture=False):
-    log('Running ' + serialize_command(args))
-    if capture:
-        return decode_proc(run(args, stdout=PIPE, stderr=PIPE))
-    else:
-        return run(args)
-
-def serialize_command(args):
-    return '$ ' + ' '.join(args)
-
-def decode_proc(proc):
-    proc.stdout = proc.stdout.decode('utf-8')
-    proc.stderr = proc.stderr.decode('utf-8')
-    return proc
 
 # Types
 # ---------------------------------------------------------------------------- #

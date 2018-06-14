@@ -35,6 +35,18 @@ CompilerFlags = namedtuple('CompilerFlags', [
     'custom',       # Additional custom flags
 ])
 
+MekpieResult = namedtuple('APIOutput', [
+    'commands',   # An array of commands run
+])
+
+Command = namedtuple('Command', [
+    'args',       # The arguments passed on the command line
+    'sargs',      # Serialized args
+    'stdout',     # A string copy of stdout
+    'stderr',     # A string copy of stderr
+    'returncode', # The command return code
+])
+
 DEFAULT_MEKPY='''
 # This is a standard configuration file for mekpie
 
