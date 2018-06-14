@@ -1,5 +1,5 @@
-# mekpie
-A c build system written in python
+![](/resources/logo.svg)
+# A `C` Build System Written in Python
 
 ## Creating a Project
 

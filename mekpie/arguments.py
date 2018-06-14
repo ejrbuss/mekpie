@@ -78,7 +78,6 @@ def parse(args):
                 break
         else:
             argument_error(messages.unknown_argument, car(args))
-    add_debug(options)
     return Options(**options)
 
 def add_debug(options):

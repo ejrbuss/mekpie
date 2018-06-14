@@ -1,10 +1,11 @@
 # External imports
-from sys     import stderr
-from re      import sub
-from os      import walk, mkdir
-from os.path import isfile, isdir, join, basename, splitext, exists
-from filecmp import dircmp
-from shutil  import rmtree
+from sys        import stderr
+from re         import sub
+from os         import walk, mkdir
+from subprocess import run, PIPE
+from os.path    import isfile, isdir, join, basename, splitext, exists
+from filecmp    import dircmp
+from shutil     import rmtree
 
 # Qualified local imports
 import mekpie.debug    as debug
@@ -13,12 +14,15 @@ import mekpie.messages as messages
 # Debug
 # ---------------------------------------------------------------------------- #
 
-def panic(message):
+def panic(message=None):
+    if message is None:
+        exit(1)
     errprint(f'\n{message.strip()}\n')
     raise Exception('Debug') if debug.debug else exit(1)
 
 def log(message):
-    errprint(f' -- {message.strip()}\n') if debug.debug else None
+    errprint(f' -- {tab(str(message)).strip()}\n') if debug.debug else None
+    return message
 
 def errprint(string):
     stderr.write(string)
@@ -122,6 +126,24 @@ def same_dir(dir1, dir2):
             in dcmp.subdirs.values()
         ])
     return recursive(dircmp(dir1, dir2))
+
+# Processes
+# ---------------------------------------------------------------------------- #
+
+def lrun(args, capture=False):
+    log('Running ' + serialize_command(args))
+    if capture:
+        return decode_proc(run(args, stdout=PIPE, stderr=PIPE))
+    else:
+        return run(args)
+
+def serialize_command(args):
+    return '$ ' + ' '.join(args)
+
+def decode_proc(proc):
+    proc.stdout = proc.stdout.decode('utf-8')
+    proc.stderr = proc.stderr.decode('utf-8')
+    return proc
 
 # Types
 # ---------------------------------------------------------------------------- #

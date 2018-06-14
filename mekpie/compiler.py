@@ -1,7 +1,7 @@
 # External imports
 from collections import namedtuple
-from subprocess  import run
 from os.path     import basename, join, abspath
+from sys         import stdout, stderr
 
 # Qualified local imports
 import mekpie.messages as messages
@@ -10,12 +10,16 @@ import mekpie.messages as messages
 from .cflags    import derive_flags
 from .util      import (
     panic, 
+    log,
     car,
     list_files, 
     flatten, 
+    tab,
     filename, 
     remove_contents, 
     empty,
+    lrun,
+    serialize_command,
 )
 from .structure import (
     get_src_path, 
@@ -42,11 +46,11 @@ def command_build(options, config):
 
 def command_run(options, config):
     command_build(options, config)
-    run([get_target(options, config)] + options.programargs)
+    lrun([get_target(options, config)] + options.programargs)
 
 def command_debug(options, config):
     command_build(options, config)
-    run([config.dbg, get_target(options, config)])
+    lrun([config.dbg, get_target(options, config)])
 
 def command_test(options, config):
     assemble_main(options, config)
@@ -54,7 +58,7 @@ def command_test(options, config):
     for (objects, name) in test_objects(options, config.main):
         output = join(get_target_tests_path(), name)
         link(objects, output, options, config)
-        run([output])
+        lrun([output])
 
 def get_target(options, config):
     return join(get_target_build_path(options.release), filename(config.main))
@@ -112,10 +116,11 @@ def get_unit(cfile, target):
 def assemble(units, options, config):
     for (cfile, ofile) in units:
         compiler_call(
-            cmd    = config.cc,
-            inputs = [cfile],
-            output = ofile,
-            flags  = derive_flags(
+            options = options,
+            cmd     = config.cc,
+            inputs  = [cfile],
+            output  = ofile,
+            flags   = derive_flags(
                 config   = config, 
                 output   = ofile, 
                 debug    = options.debug, 
@@ -126,10 +131,11 @@ def assemble(units, options, config):
 
 def link(objects, output, options, config):
     compiler_call(
-        cmd    = config.cc,
-        inputs = objects,
-        output = output,
-        flags  = derive_flags(
+        options = options,
+        cmd     = config.cc,
+        inputs  = objects,
+        output  = output,
+        flags   = derive_flags(
             config   = config, 
             output   = output, 
             debug    = options.debug, 
@@ -138,5 +144,10 @@ def link(objects, output, options, config):
         )
     )
 
-def compiler_call(cmd, inputs, output, flags):
-    run([cmd] + inputs + flags)
+def compiler_call(options, cmd, inputs, output, flags):
+    proc = lrun([cmd] + inputs + flags, capture=True)
+    if proc.returncode != 0:
+        panic(None if options.quiet else messages.failed_compiler_call.format(
+            serialize_command(proc.args), 
+            tab(proc.stderr)
+        ))

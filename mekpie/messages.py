@@ -108,3 +108,12 @@ No options: API call to mekpie was made without an `Options` instance!
 
      Call `core.mekpie` with an instance of `definitions.Options`
 '''
+
+failed_compiler_call = '''
+Build failed: the following call to the compiler failed:
+
+    {}
+
+And the following errors were produced:
+    {}
+'''

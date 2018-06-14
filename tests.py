@@ -1,5 +1,5 @@
 # External Imports
-from subprocess import call
+from subprocess import run
 from sys        import stderr
 from os         import listdir
 from os.path    import join
@@ -11,7 +11,7 @@ python = 'python3'
 def test(path):
     stderr.write(f' -- Running {path}...\n')
     stderr.flush()
-    call([python, '-m', 'unittest', path])
+    run(f'{python} -m unittest {path}'.split())
 
 # Gather test paths
 paths = [join('tests/', path)
