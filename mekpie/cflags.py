@@ -14,7 +14,7 @@ compilers = {
         output       = lambda path : [f'-o', path],
         include      = lambda path : [f'-I', path],
         libs         = lambda lib : [f'-l{lib}'],
-        warning      = ['-Wall', '-Wpedantic', '-Wextra'],
+        warning      = ['-Wall', '-Wextra'],
         strict       = ['-Werror'],
         assemble     = ['-c'],
         debug        = ['-g'],
@@ -35,18 +35,6 @@ compilers = {
     ),
     # Compiler flag configuration for gcc
     'gcc' : CompilerFlags(
-        output       = lambda path : [f'-o', path],
-        include      = lambda path : [f'-I', path],
-        libs         = lambda lib : [f'-l{lib}'],
-        warning      = ['-Wall', '-Wpedantic', '-Wextra'],
-        strict       = ['-Werror'],
-        assemble     = ['-c'],
-        debug        = ['-g'],
-        optimization = ['-O'],
-        custom       = [],
-    ),
-    # Compiler flag configuration for cl
-    'cl' : CompilerFlags(
         output       = lambda path : [f'-o', path],
         include      = lambda path : [f'-I', path],
         libs         = lambda lib : [f'-l{lib}'],
@@ -84,7 +72,7 @@ def get_flags(key, config):
         key,
         key + '_flag = []',
     ))
-    
+
 def user_has_overriden_flags(key, config):
     return hasattr(config.flags, key) and getattr(config.flags, key)
 

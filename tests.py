@@ -1,11 +1,11 @@
 # External Imports
 from subprocess import run
 from sys        import stderr
-from os         import listdir
-from os.path    import join
+from os         import listdir, mkdir
+from os.path    import join, exists
 
 # Python3.8 command line name
-python = 'python3'
+python = 'python'
 
 # Run a test file
 def test(path):
@@ -15,8 +15,8 @@ def test(path):
 
 # Gather test paths
 paths = [join('tests/', path)
-    for path 
-    in listdir('./tests') 
+    for path
+    in listdir('./tests')
     if path.endswith('.py') and not path.startswith('__')]
 
 # Run tests

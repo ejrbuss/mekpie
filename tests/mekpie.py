@@ -8,7 +8,7 @@ from sys      import path
 from mekpie.core        import mekpie
 from mekpie.definitions import Options, MAIN
 from mekpie.create      import command_new, command_init
-from mekpie.util        import same_dir, srmtree, empty
+from mekpie.util        import same_dir, srmtree, empty, smkdir
 from mekpie.compiler    import (
     command_clean,
     command_build,
@@ -16,134 +16,121 @@ from mekpie.compiler    import (
     command_test,
 )
 
-root = abspath(curdir)
+default_project_name = 'default-project'
+default_test_dir     = abspath('./examples/tests/')
+default_project      = abspath(f'./examples/{default_project_name}/')
+default_test_project = abspath(f'./examples/tests/{default_project_name}/')
 
-def reset_dir():
-    chdir(root)
+# sanity
+smkdir(default_test_dir)
 
-def get_options(newdir, command, subargs=[], programargs=[]):
+def clean_test_dir():
+    srmtree(default_test_project)
+
+def get_options(command, subargs=[], cdir=default_test_project):
     return Options(
         quiet       = False,
         verbose     = False,
         release     = False,
         developer   = False,
-        changedir   = [newdir],
+        changedir   = [cdir],
         command     = command,
-        debug       = False,
+        debug       = True,
         subargs     = subargs,
-        programargs = programargs,
+        programargs = [],
     )
 
-def new_default():
-    reset_dir()
-    srmtree('./examples/tests/default-project')
-    mekpie(get_options(
-        './examples/tests',
-        command_new,
-        ['default-project'],
-    ))
-    reset_dir()
+def effective_program(path):
+    path = path.replace('\\', '\\\\')
+    return f'''
+#include <stdio.h>
+#include <stdlib.h>
 
-def cleanup_default():
-    reset_dir()
-    srmtree('./examples/tests/default-project')
+int main() {{
+    FILE *fp;
+    fp = fopen("{path}", "w");
+    fclose(fp);
+    return EXIT_SUCCESS;
+}}
+
+'''
+
+class TestProject():
+
+    def __enter__(self):
+        clean_test_dir()
+        mekpie(get_options(
+            command_new,
+            [default_project_name],
+            default_test_dir,
+        ))
+
+    def __exit__(self, type, value, traceback):
+        clean_test_dir()
+
 
 class TestMekpie(TestCase):
 
     def test_new(self):
-        new_default()
-        self.assertTrue(same_dir(
-            './examples/default-project',
-            './examples/tests/default-project',
-        ))
-        cleanup_default()
+        with TestProject():
+            self.assertTrue(same_dir(
+                default_project,
+                default_test_project,
+            ))
 
     def test_init(self):
-        reset_dir()
-        srmtree('./examples/tests/default-project')
-        mkdir('./examples/tests/default-project')
-        mekpie(get_options(
-            './examples/tests/default-project',
-            command_init,
-        ))
-        reset_dir()
+        clean_test_dir()
+        smkdir(default_test_project)
+        mekpie(get_options(command_init))
         self.assertTrue(same_dir(
-            './examples/default-project',
-            './examples/tests/default-project',
+            default_project,
+            default_test_project,
         ))
-        srmtree('./examples/tests/default-project')
+        clean_test_dir()
 
     def test_test(self):
-        new_default()
-        with open('./examples/tests/default-project/tests/test1.c', 'w') as resource:
-            resource.write(MAIN.replace('Hello, World!', 'test1!') + '\n')
-        with open('./examples/tests/default-project/tests/test2.c', 'w') as resource:
-            resource.write(MAIN.replace('Hello, World!', 'test2!') + '\n')
-        with open('./examples/tests/default-project/tests/test3.c', 'w') as resource:
-            resource.write(MAIN.replace('Hello, World!', 'test3!') + '\n')
-        results = mekpie(get_options(
-            './examples/tests/default-project',
-            command_test,
-        ))
-        out = (
-            results.commands[-1].stdout +
-            results.commands[-3].stdout +
-            results.commands[-5].stdout 
-        )
-        reset_dir()
-        self.assertEqual(out, 'test3!\ntest2!\ntest1!\n')
-        results = mekpie(get_options(
-            './examples/tests/default-project',
-            command_test,
-            subargs=['test2', 'test3'],
-        ))
-        reset_dir()
-        out = (
-            results.commands[-1].stdout +
-            results.commands[-3].stdout
-        )
-        self.assertEqual(out, 'test3!\ntest2!\n')
-        cleanup_default()
+        with TestProject():
+            test1 = default_test_project + '/test1.txt'
+            test2 = default_test_project + '/test2.txt'
+            test3 = default_test_project + '/test3.txt'
+            with open(default_test_project + '/tests/test1.c', 'w') as rsc:
+                rsc.write(effective_program(test1))
+            with open(default_test_project + '/tests/test2.c', 'w') as rsc:
+                rsc.write(effective_program(test2))
+            with open(default_test_project + '/tests/test3.c', 'w') as rsc:
+                rsc.write(effective_program(test3))
+            mekpie(get_options(command_test, ['test2', 'test3']))
+            self.assertFalse(exists(test1))
+            self.assertTrue(exists(test2))
+            self.assertTrue(exists(test3))
+            mekpie(get_options(command_test))
+            self.assertTrue(exists(test1))
+            self.assertTrue(exists(test2))
+            self.assertTrue(exists(test3))
 
     def test_clean(self):
-        new_default()
-        mekpie(get_options(
-            './examples/tests/default-project',
-            command_build,
-        ))
-        reset_dir()
-        mekpie(get_options(
-            './examples/tests/default-project',
-            command_clean,
-        ))
-        reset_dir()
-        self.assertFalse(exists(
-            './examples/tests/default-project/target/debug/default-project.o'
-        ))
-        cleanup_default()
+        with TestProject():
+            mekpie(get_options(command_build))
+            mekpie(get_options(command_clean))
+            self.assertFalse(exists(
+                default_test_project + '/target/debug/default-project.o'
+            ))
 
     def test_build(self):
-        new_default()
-        results = mekpie(get_options(
-            './examples/tests/default-project',
-            command_build,
-        ))
-        reset_dir()
-        self.assertFalse(empty(results.commands))
-        self.assertTrue(
-            all(map(lambda c : c.returncode == 0, results.commands))
-        )
-        self.assertTrue(exists(
-            './examples/tests/default-project/target/debug/default-project.o'
-        ))
-        cleanup_default()
+        with TestProject():
+            results = mekpie(get_options(command_build))
+            self.assertFalse(empty(results.commands))
+            self.assertTrue(
+                all(map(lambda c : c.returncode == 0, results.commands))
+            )
+            self.assertTrue(exists(
+                default_test_project + '/target/debug/default-project.o'
+            ))
 
     def test_run(self):
-        new_default()
-        results = mekpie(get_options(
-            './examples/tests/default-project',
-            command_run,
-        ))
-        out = results.commands[-1].stdout
-        self.assertEqual(out, 'Hello, World!\n')
-        cleanup_default()
+        with TestProject():
+            build = abspath(default_test_project + '/build.txt')
+            with open(default_test_project + '/src/default-project.c', 'w') as rsc:
+                rsc.write(effective_program(build))
+            mekpie(get_options(command_run))
+            self.assertTrue(exists(build))

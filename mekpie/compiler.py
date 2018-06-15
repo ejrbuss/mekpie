@@ -10,19 +10,19 @@ import mekpie.messages as messages
 from .runner    import lrun
 from .cflags    import derive_flags
 from .util      import (
-    panic, 
+    panic,
     log,
     car,
-    list_files, 
-    flatten, 
+    list_files,
+    flatten,
     tab,
-    filename, 
-    remove_contents, 
+    filename,
+    remove_contents,
     empty,
 )
 from .structure import (
-    get_src_path, 
-    get_test_path, 
+    get_src_path,
+    get_test_path,
     get_target_debug_path,
     get_target_release_path,
     get_target_build_path,
@@ -37,8 +37,8 @@ def command_clean(options, config):
 def command_build(options, config):
     assemble_main(options, config)
     link(
-        target_objects(options.release), 
-        get_target(options, config), 
+        target_objects(options.release),
+        get_target(options, config),
         options,
         config,
     )
@@ -64,7 +64,7 @@ def get_target(options, config):
 
 def target_objects(release):
     return list_files(
-        get_target_build_path(release), 
+        get_target_build_path(release),
         with_ext='.o',
     )
 
@@ -73,8 +73,8 @@ def test_objects(options, main):
         return filename(ofile) != filename(main)
     ofiles  = list(filter(not_main, target_objects(options.release)))
     objects = [
-        (ofiles + [ofile], filename(ofile)) 
-        for ofile 
+        (ofiles + [ofile], filename(ofile))
+        for ofile
         in list_files(get_target_tests_path(), with_ext='.o')
         if empty(options.subargs) or filename(ofile) in options.subargs
     ]
@@ -86,22 +86,22 @@ def test_objects(options, main):
 
 def assemble_main(options, config):
     assemble(
-        get_units_from(get_src_path(), get_target_build_path(options.release)), 
+        get_units_from(get_src_path(), get_target_build_path(options.release)),
         options,
         config,
     )
 
 def assemble_test(options, config):
     assemble(
-        get_units_from(get_test_path(), get_target_tests_path()), 
+        get_units_from(get_test_path(), get_target_tests_path()),
         options,
         config,
     )
 
 def get_units_from(path, target):
     return [get_unit(cfile, target) for cfile in list_files(
-        path, 
-        with_ext='.c', 
+        path,
+        with_ext='.c',
         recursive=True
     )]
 
@@ -113,14 +113,14 @@ def assemble(units, options, config):
     for (cfile, ofile) in units:
         compiler_call(
             options = options,
-            cmd     = config.cc,
+            cmd     = config.cmd,
             inputs  = [cfile],
             output  = ofile,
             flags   = derive_flags(
-                config   = config, 
-                output   = ofile, 
-                debug    = options.debug, 
-                release  = options.release, 
+                config   = config,
+                output   = ofile,
+                debug    = options.debug,
+                release  = options.release,
                 assemble = True,
             )
         )
@@ -128,14 +128,14 @@ def assemble(units, options, config):
 def link(objects, output, options, config):
     compiler_call(
         options = options,
-        cmd     = config.cc,
+        cmd     = config.cmd,
         inputs  = objects,
         output  = output,
         flags   = derive_flags(
-            config   = config, 
-            output   = output, 
-            debug    = options.debug, 
-            release  = options.release, 
+            config   = config,
+            output   = output,
+            debug    = options.debug,
+            release  = options.release,
             assemble = False,
         )
     )
@@ -144,6 +144,6 @@ def compiler_call(options, cmd, inputs, output, flags):
     proc = lrun([cmd] + inputs + flags, quiet=True)
     if proc.returncode != 0:
         panic(None if options.quiet else messages.failed_compiler_call.format(
-            proc.sargs, 
+            proc.sargs,
             tab(proc.stderr)
         ))

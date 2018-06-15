@@ -10,8 +10,8 @@ includes = ['./includes']
 # any libraries to load
 libs = []
 # the c compiler configuration to use (default, gcc, clang, cl)
-cc = 'clang'
+cc = 'gcc'
 # the c compiler command to use on the command line
-cmd = 'cc'
+cmd = 'gcc'
 # the debugger to use
 dbg = 'gdb'

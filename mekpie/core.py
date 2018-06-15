@@ -1,6 +1,7 @@
 # External imports
-from os  import curdir, chdir
-from sys import argv
+from os      import curdir, chdir, curdir
+from sys     import argv
+from os.path import abspath
 
 # Qualified local imports
 import mekpie.debug    as debug
@@ -14,10 +15,12 @@ from .definitions import MekpieResult, Options
 from .runner      import commands
 
 def mekpie(options):
+    root = abspath(curdir)
     if type(options) != Options:
         panic(messages.api_no_options)
     prepare_for_command(options)
     perform_command(options)
+    chdir(root)
     return log(MekpieResult(commands))
 
 def main(args=cdr(argv)):
