@@ -36,16 +36,17 @@ def empty(collection):
 def car(collection):
     if not empty(collection):
         return collection[0]
-    
+
 def last(collection):
     if not empty(collection):
         return collection[-1]
 
 def cdr(collection):
-    return collection[1:]
+    if not empty(collection):
+        return collection[1:]
 
-def cons(collection, item):
-    return collection + [item]
+def cons(item, collection):
+    return [item] + collection
 
 def shift(collection, n=1):
     for _ in range(n):
@@ -92,9 +93,9 @@ def list_files(path, with_filter=None, with_ext=None, recursive=False):
 
 def list_all_files(path):
     return flatten([[join(pre, post)
-            for post 
-            in posts] 
-        for (pre, _, posts) 
+            for post
+            in posts]
+        for (pre, _, posts)
         in walk(path)
     ])
 
@@ -125,8 +126,8 @@ def same_dir(dir1, dir2):
     def recursive(dcmp):
         if dcmp.diff_files:
             return False
-        return all([recursive(sub_dcmp) 
-            for sub_dcmp 
+        return all([recursive(sub_dcmp)
+            for sub_dcmp
             in dcmp.subdirs.values()
         ])
     return recursive(dircmp(dir1, dir2))

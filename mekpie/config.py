@@ -27,17 +27,20 @@ def config_from_dict(config_dict):
         cc       = config_dict.get('cc',       None),
         cmd      = config_dict.get('cmd',      None),
         dbg      = config_dict.get('dbg',      'gdb'),
+        version  = config_dict.get('version',  ''),
+        define   = config_dict.get('define',   {}),
         flags    = CompilerFlags(
-            output       = config_dict.get('output_flags',       None),
-            include      = config_dict.get('include_flags',      None),
-            libs         = config_dict.get('libs_flags',         None),
-            warning      = config_dict.get('warning_flags',      None), 
+            output       = None,
+            include      = None,
+            libs         = None,
+            define       = None,
+            warning      = config_dict.get('warning_flags',      None),
             strict       = config_dict.get('strict_flags',       None),
             assemble     = config_dict.get('assemble_flags',     None),
             debug        = config_dict.get('debug_flags',        None),
             optimization = config_dict.get('optimization_flags', None),
             custom       = config_dict.get('custom_flags',       None),
-        )
+        ),
     ))
 
 def check_config(config):
@@ -48,6 +51,8 @@ def check_config(config):
     check_cc(config.cc)
     check_cmd(config.cc)
     check_dbg(config.dbg)
+    check_version(config.version)
+    check_define(config.define)
     check_flags(config.flags)
     return config
 
@@ -81,13 +86,17 @@ def check_cmd(cmd):
 def check_dbg(dbg):
     check_type('dbg', dbg, str)
 
+def check_version(version):
+    check_type('version', version, str, bool)
+
+def check_define(define):
+    check_type('define', define, dict)
+    for key in define.keys():
+        check_type('define key', key, str)
+    for value in define.keys():
+        check_type('define value', key, str, bool)
+
 def check_flags(flags):
-    if flags.output:
-        check_type('output_flags', flags.output, type(lambda:None))
-    if flags.include:
-        check_type('include_flags', flags.include, type(lambda:None))
-    if flags.libs:
-        check_type('libs_flags', flags.libs, type(lambda:None))
     if flags.warning:
         check_type('warning_flags', flags.warning, list)
     if flags.strict:
@@ -101,11 +110,11 @@ def check_flags(flags):
     if flags.custom:
         check_type('custom_flags', flags.custom, list)
 
-def check_type(name, value, expected_type):
-    if type(value) != expected_type:
+def check_type(name, value, *expected_types):
+    if all([type(value) != exp for exp in expected_types]):
         panic(messages.type_error.format(
             name,
-            expected_type.__name__,
+            ' or '.join([exp.__name__ for exp in expected_types]),
             type_name(value),
             tab(get_description(name))
         ))
@@ -118,6 +127,8 @@ def get_description(name):
         'libs'               : '`libs` speicfies and libraries to load',
         'cc'                 : '`cc` specifies the c compiler to use',
         'dbg'                : '`dbg` specifies the debugger to use',
+        'version'            : '`version` specifies the version of the project',
+        'define'             : '`define` specifies the preprocessor definitions for the project',
         'output_flags'       : '`output_flags` overrides the compiler flags for output',
         'include_flags'      : '`include_flags` overrides the compiler flags for include directories',
         'libs_flags'         : '`libs_flags` overrides the compiler flags for libraries',

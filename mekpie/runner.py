@@ -19,6 +19,7 @@ def lrun(args, quiet=False, error=True):
     except OSError:
         if error:
             panic(messages.failed_program_call.format(serialize_command(args)))
+    return error_command(args)
 
 def run_args(args, quiet):
     if quiet:
@@ -34,6 +35,15 @@ def create_command(args, proc):
         stdout     = (proc.stdout or b'').decode('utf-8'),
         stderr     = (proc.stderr or b'').decode('utf-8'),
         returncode = proc.returncode,
+    )
+
+def error_command(args):
+    return Command(
+        args       = args,
+        sargs      = serialize_command(args),
+        stdout     = '',
+        stderr     = '',
+        returncode = -1,
     )
 
 def serialize_command(args):

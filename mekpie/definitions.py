@@ -22,12 +22,15 @@ Config = namedtuple('Config', [
     'cmd',      # The C Compiler command
     'dbg',      # Debugger
     'flags',    # Custom flags
+    'version',  # Version string
+    'define',   # A set of preprocessor variables to define/undefined
 ])
 
 CompilerFlags = namedtuple('CompilerFlags', [
-    'output',       # Output flag format
-    'include',      # Include flag format
-    'libs',         # library flag format
+    'output',       # Output flag format function
+    'include',      # Include flag format function
+    'libs',         # library flag format function
+    'define',       # define flag format function
     'warning',      # Enable warnings
     'strict',       # Enable error on warning
     'assemble',     # Flags specific to assembly
@@ -51,8 +54,10 @@ Command = namedtuple('Command', [
 DEFAULT_MEKPY='''
 # This is a standard configuration file for mekpie
 
-# the name of the project
+# the name of your project
 name = '{}'
+# the version of your project
+version = '1.0.0'
 # the .c file containing `main`
 main = '{}'
 # any include directories

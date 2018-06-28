@@ -8,12 +8,30 @@ import mekpie.messages as messages
 from .definitions import CompilerFlags
 from .util        import panic, flatten
 
+def default_output(path):
+    return [f'-o', path]
+
+def default_include(path):
+    return [f'-I', path]
+
+def default_libs(lib):
+    return [f'-l{lib}']
+
+def default_define(name, definition):
+    if definition == True:
+        return [f'-D{name}']
+    if definition == False:
+        return [f'-U{name}']
+    else:
+        return [f'-D{name}={definition}']
+
 compilers = {
     # Default compiler flags
     'default' : CompilerFlags(
-        output       = lambda path : [f'-o', path],
-        include      = lambda path : [f'-I', path],
-        libs         = lambda lib : [f'-l{lib}'],
+        output       = default_output,
+        include      = default_include,
+        libs         = default_libs,
+        define       = default_define,
         warning      = ['-Wall', '-Wextra'],
         strict       = ['-Werror'],
         assemble     = ['-c'],
@@ -22,37 +40,22 @@ compilers = {
         custom       = [],
     ),
     # Compiler flag configuration for clang
-    'clang' : CompilerFlags(
-        output       = lambda path : [f'-o', path],
-        include      = lambda path : [f'-I', path],
-        libs         = lambda lib : [f'-l{lib}'],
-        warning      = ['-Wall', '-Wpedantic', '-Wextra'],
-        strict       = ['-Werror'],
-        assemble     = ['-c'],
-        debug        = ['-g'],
-        optimization = ['-O'],
-        custom       = [],
-    ),
+    'clang' : 'default',
     # Compiler flag configuration for gcc
-    'gcc' : CompilerFlags(
-        output       = lambda path : [f'-o', path],
-        include      = lambda path : [f'-I', path],
-        libs         = lambda lib : [f'-l{lib}'],
-        warning      = ['-Wall', '-Wpedantic', '-Wextra'],
-        strict       = ['-Werror'],
-        assemble     = ['-c'],
-        debug        = ['-g'],
-        optimization = ['-O'],
-        custom       = [],
-    ),
+    'gcc' : 'default',
 }
 
 def derive_flags(config, output, debug, release, assemble):
     return flatten([
         # Config Derived flags
-        flatten(map(get_flags('include', config), config.includes)),
-        flatten(map(get_flags('libs',    config), config.libs)),
+        flatten([get_flags('include', config)(inc)
+            for inc in config.includes]),
+        flatten([get_flags('libs',    config)(lib)
+            for lib in config.libs]),
+        flatten([get_flags('define',  config)(name, value)
+            for name, value in config.define.items()]),
         # Compiler derived flags
+        get_flags('define',       config)('VERSION', f'"{config.version}"'),
         get_flags('output',       config)(output),
         get_flags('warning',      config),
         get_flags('strict',       config),
@@ -82,5 +85,11 @@ def compiler_has_default_flags(config):
 def user_flags(key, config):
     return getattr(config.flags, key)
 
+def aliased(flags):
+    return type(flags) == str
+
 def compiler_default_flags(key, config):
-    return getattr(compilers[config.cc], key)
+    if aliased(compilers[config.cc]):
+        return getattr(compilers[compilers[config.cc]], key)
+    else:
+        return getattr(compilers[config.cc], key)

@@ -120,9 +120,6 @@ class TestMekpie(TestCase):
         with TestProject():
             results = mekpie(get_options(command_build))
             self.assertFalse(empty(results.commands))
-            self.assertTrue(
-                all(map(lambda c : c.returncode == 0, results.commands))
-            )
             self.assertTrue(exists(
                 default_test_project + '/target/debug/default-project.o'
             ))

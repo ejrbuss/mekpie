@@ -93,22 +93,22 @@ def option(aliases, n, handler):
 
 def flag(name, aliases):
     return option(
-        aliases = aliases, 
-        n       = 1, 
+        aliases = aliases,
+        n       = 1,
         handler = lambda _, options : add_arg(name, True, options),
     )
 
 def arg(name, n, aliases):
     return option(
-        aliases = aliases, 
-        n       = n, 
+        aliases = aliases,
+        n       = n,
         handler = lambda args, options : add_arg(name, args, options),
     )
 
 def command(command, n, aliases):
     return option(
-        aliases = aliases, 
-        n       = n, 
+        aliases = aliases,
+        n       = n,
         handler = lambda args, options : add_command(command, args, options),
     )
 
