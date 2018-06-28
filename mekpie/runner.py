@@ -16,6 +16,8 @@ def lrun(args, quiet=False, error=True):
     try:
         commands.append(create_command(args, run_args(args, quiet)))
         return last(commands)
+    except KeyboardInterrupt:
+        exit()
     except OSError:
         if error:
             panic(messages.failed_program_call.format(serialize_command(args)))
