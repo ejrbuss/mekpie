@@ -1,4 +1,3 @@
-# External imports
 from sys import version_info, stderr
 
 # Require python 3.6
@@ -9,7 +8,6 @@ if version_info.major < required_major or version_info.minor < required_minor:
     stderr.write('\nPython error: mekpie requires python version 3.6 or later!\n')
     exit(1)
 
-# Local imports
 from .core import main
 
 # Program entry point for module

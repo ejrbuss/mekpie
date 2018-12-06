@@ -1,12 +1,10 @@
-# External imports
-from sys     import stderr
 from re      import sub
 from os      import walk, mkdir
+from sys     import stderr
+from shutil  import rmtree
 from os.path import isfile, isdir, join, basename, splitext, exists
 from filecmp import dircmp
-from shutil  import rmtree
 
-# Qualified local imports
 import mekpie.debug    as debug
 import mekpie.messages as messages
 
@@ -16,7 +14,7 @@ import mekpie.messages as messages
 def panic(message=None):
     if message is None:
         exit(1)
-    errprint(f'\n{message.strip()}\n')
+    errprint(f'\n{message.strip()}\n\n')
     raise Exception('Debug') if debug.debug else exit(1)
 
 def log(message):
@@ -55,6 +53,15 @@ def shift(collection, n=1):
 
 def flatten(collection):
     return sum(collection, [])
+
+def split(collection, item):
+    if item not in collection:
+        return collection, []
+    index  = collection.index(item)
+    first  = collection[:index]
+    second = collection[index + 1:] 
+    return first, second
+
 
 # Strings
 # ---------------------------------------------------------------------------- #
@@ -103,7 +110,7 @@ def filename(path):
     return splitext(basename(path))[0]
 
 def file_as_str(path):
-    log(f'Reading the conents of {path}...')
+    log(f'Reading the contents of {path}...')
     with open(path) as resource:
         return resource.read()
 
@@ -131,6 +138,17 @@ def same_dir(dir1, dir2):
             in dcmp.subdirs.values()
         ])
     return recursive(dircmp(dir1, dir2))
+
+def exec_str(source, handle):
+    ctx = {}
+    try:
+        exec(source, ctx)
+    except Exception as err:
+        panic(messages.execution_error.format(handle, tab(str(err))))
+    return ctx
+
+def exec_file(path):
+    return exec_str(file_as_str(path), path)
 
 # Types
 # ---------------------------------------------------------------------------- #

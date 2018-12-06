@@ -12,14 +12,16 @@ Options:
     -q, --quiet     No output to stdout
     -r, --release   Run the command for release
     -d, --developer Run mekpie in developer mode
+    -c, --changedir Run the mekpie command in the provided directory
 
 Commands:
-    new <name>  Create a new mekpie project
-    test <name> Build and execute tests or test
-    clean       Remove artefacts from previous builds
-    build       Compile the current project
-    run         Build and execute main
-    debug       Build and execute under a debugger
+    new  <name>     Create a new mekpie project
+    test <names...> Build and execute tests or test
+    clean           Remove artefacts from previous builds
+    build           Compile the current project
+    run             Build and execute main
+    debug           Build and execute under a debugger
+
 '''
 
 version = f'''
@@ -63,8 +65,11 @@ Missing argument: You must provide the positional argument `name`!
     argument `name` after the command.
 '''
 
-error_reading_mekpy = '''
-Config error: Error while reading mek.py!
+execution_error = '''
+Execution error: Error while trying to execute a python resource!
+    
+    Error occured when attempting to execute: {}
+
 {}
 '''
 
@@ -136,4 +141,26 @@ Compiler detection failed: could not auto-detect a c compiler
 
     To help mekpie find a c compiler ensure that `cc` is aliased to a valid
     c ompiler.
+'''
+
+release_debug = '''
+Build failed: cannot launch debugger for a release build
+
+    To launch the debugger run the command again without the --release flag.
+'''
+
+created = '''
+{} created succesfully!
+'''
+
+initialized = '''
+{} initialized succesfully!
+'''
+
+clean = '''
+Project succesfully cleaned.
+'''
+
+build_succeeded = '''
+Project succesfully built.
 '''

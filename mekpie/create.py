@@ -7,8 +7,8 @@ from os.path import basename, abspath, exists
 import mekpie.messages as messages
 
 # Local imports
-from .util        import panic, empty, car, smkdir
-from .config      import read_config
+from .util        import panic, empty, car, smkdir, exec_str
+from .config      import config_from_dict
 from .autodetect  import autodetect_compiler
 from .definitions import DEFAULT_MEKPY, MAIN
 from .structure   import (
@@ -22,11 +22,9 @@ from .structure   import (
     get_target_path,
     get_target_debug_path,
     get_target_release_path,
-    get_target_tests_path,
 )
 
 def command_new(options):
-    autodetect_compiler()
     name = project_name(options)
     check_name(name)
     create_project_directory(name)
@@ -35,12 +33,10 @@ def command_new(options):
     create_tests()
     create_includes()
     create_target()
-    chdir(get_project_path())
-    set_project_path(curdir)
-    read_config(get_mekpy_source(name))
+    config_from_dict(exec_str(get_mekpy_source(name), 'default mek.py'), options)
+    print(messages.created.format(name).strip())
 
 def command_init(options):
-    autodetect_compiler()
     name = basename(abspath(curdir))
     check_name(name)
     create_mekpy(name)
@@ -48,7 +44,8 @@ def command_init(options):
     create_tests()
     create_includes()
     create_target()
-    read_config(get_mekpy_source(name))
+    config_from_dict(exec_str(get_mekpy_source(name), 'default mek.py'), options)
+    print(messages.initialized.format(name).strip())
 
 def check_name(name):
     if not name:
@@ -79,16 +76,15 @@ def create_includes():
 
 def create_target():
     smkdir(get_target_path())
-    smkdir(get_target_debug_path())
     smkdir(get_target_release_path())
-    smkdir(get_target_tests_path())
+    smkdir(get_target_debug_path())
 
 def project_name(options):
-    return car(options.subargs)
+    return car(options.commandargs)
 
 def get_main_source():
     return MAIN + '\n'
 
 def get_mekpy_source(name):
-    cc, cmd = autodetect_compiler()
-    return DEFAULT_MEKPY.format(name, name + '.c', cc, cmd)
+    cc, cmd, dbg = autodetect_compiler()
+    return DEFAULT_MEKPY.format(name, name + '.c', cc, cmd, dbg)

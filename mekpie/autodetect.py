@@ -1,41 +1,16 @@
-# External Imports
-from shutil import which
 from os     import name
+from shutil import which
 
-# Qualified local imports
 import mekpie.messages as messages
 
-# Local Imports
-from .util   import panic, log
-from .cflags import compilers
-from .runner import lrun
+from .util        import panic, log
+from .definitions import CC_CMDS
 
 def autodetect_compiler():
-    if defined('cc'):
-        return get_compiler_config('cc')
-    if defined('clang'):
-        return get_compiler_config('clang')
-    if defined('gcc'):
-        return get_compiler_config('gcc')
+    for cmd in CC_CMDS.keys():
+        if defined(cmd):
+            return CC_CMDS[cmd]
     panic(messages.failed_autodetect)
-
-def get_compiler_config(cmd):
-    if (cmd == 'cc'):
-        return (disambiguate(), 'cc')
-    return (cmd, cmd)
-
-def disambiguate():
-    cc = identifier('cc')
-    for (compiler, path)  in log([(compiler, identifier(compiler))
-        for compiler
-        in compilers.keys()]):
-        if cc == path:
-            return compiler
-    return 'default'
-
-def identifier(cc):
-    result = lrun([cc], quiet=True, error=False)
-    return result.stderr + result.stdout
 
 def defined(name):
     return which(name) is not None

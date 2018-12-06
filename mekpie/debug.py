@@ -1,4 +1,3 @@
-args  = []
 debug = False
 
 def enable():

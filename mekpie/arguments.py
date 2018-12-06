@@ -1,34 +1,39 @@
-# Qualified local imports
-import mekpie.messages as messages
 import mekpie.debug    as debug
+import mekpie.messages as messages
 
-# Local imports
-from .definitions import Options
+from .create      import command_new, command_init
+from .definitions import Options, Option
+
 from .util import (
     car,
-    shift,
+    cdr,
+    tab,
+    split,
     empty,
     panic,
-    tab,
     underline,
 )
-from .create import (
-    command_new,
-    command_init,
-)
 from .compiler import (
+    command_run,
+    command_test,
     command_clean,
     command_build,
-    command_run,
     command_debug,
-    command_test,
 )
 
-def command_help(options):
+def command_help(cfg):
     print(messages.usage)
 
-def command_version(options):
+def command_version(cfg):
     print(messages.version)
+
+def pre_config_commands():
+    return [
+        command_help,
+        command_version,
+        command_new,
+        command_init,
+    ]
 
 def default_options():
     return Options(
@@ -37,94 +42,74 @@ def default_options():
         release     = False,
         developer   = False,
         changedir   = False,
-        debug       = False,
         command     = None,
-        subargs     = [],
+        commandargs = [],
         programargs = [],
-    )._asdict()
+    )
 
 def available_options():
     return [
-        flag('quiet',               ['-q', '--quiet']),
-        flag('verbose',             ['-v', '--verbose']),
-        flag('release',             ['-r', '--release']),
-        flag('developer',           ['-d', '--developer']),
-        arg('changedir',         2, ['-c', '--changedir']),
-        arg('programargs',     100, ['--']),
-        command(command_help,    1, ['-h', '--help', 'help']),
-        command(command_version, 1, ['-V', '--version', 'version']),
-        command(command_new,     2, ['new']),
-        command(command_init,    1, ['init']),
-        command(command_clean,   1, ['clean']),
-        command(command_build,   1, ['build']),
-        command(command_run,     1, ['run']),
-        command(command_test,    2, ['test']),
-        command(command_debug,   1, ['debug']),
+        flag('quiet',            ['-q', '--quiet']),
+        flag('verbose',          ['-v', '--verbose']),
+        flag('release',          ['-r', '--release']),
+        flag('developer',        ['-d', '--developer']),
+        flag('changedir',        ['-c', '--changedir'], 2),
+        command(command_help,    ['-h', '--help', 'help']),
+        command(command_version, ['-V', '--version', 'version']),
+        command(command_new,     ['new']),
+        command(command_init,    ['init']),
+        command(command_clean,   ['clean']),
+        command(command_build,   ['build']),
+        command(command_run,     ['run']),
+        command(command_test,    ['test']),
+        command(command_debug,   ['debug']),
     ]
 
-def pre_config_commands():
-    return [
-        command_new,
-        command_init,
-        command_help,
-        command_version,
-    ]
-
-def parse(args):
-    options = default_options()
+def parse_arguments(args):
+    argsall = args[:]
+    options = default_options()._asdict()
+    args, programargs = split(args, '--')
+    options['programargs'] = programargs
     while not empty(args):
-        for option in available_options():
-            if option(args, options):
+        arg = car(args)
+        for names, nargs, handler in available_options():
+            if arg in names:
+                handler(options, args[:nargs], argsall)
+                args = args[nargs:] if nargs else []
                 break
         else:
-            argument_error(messages.unknown_argument, car(args))
+            argument_error(messages.unknown_argument, car(args), argsall)
     return Options(**options)
 
-def add_debug(options):
-    options['debug'] = options['command'] == command_debug
+def flag(name, aliases, nargs=1):
 
-def option(aliases, n, handler):
-    def parse_option(args, options):
-        if car(args) in aliases:
-            handler(args[1:n], options)
-            shift(args, n)
-            return True
-    return parse_option
+    def handle_flag(options, args, argsall):
+        if options[name]:
+            argument_error(messages.repeated_option.format(name), name, argsall)
+        else:
+            options[name] = cdr(args) or True
 
-def flag(name, aliases):
-    return option(
-        aliases = aliases,
-        n       = 1,
-        handler = lambda _, options : add_arg(name, True, options),
+    return Option(
+        names   = aliases,
+        nargs   = nargs,
+        handler = handle_flag,
     )
 
-def arg(name, n, aliases):
-    return option(
-        aliases = aliases,
-        n       = n,
-        handler = lambda args, options : add_arg(name, args, options),
+def command(command, aliases):
+
+    def handle_command(options, args, argsall):
+        if options['command']:
+            argument_error(messages.too_many_arguments, command, argsall)
+        else:
+            options['commandargs'] = cdr(args)
+            options['command']    = command
+
+    return Option(
+        names   = aliases,
+        nargs   = None,
+        handler = handle_command,
     )
 
-def command(command, n, aliases):
-    return option(
-        aliases = aliases,
-        n       = n,
-        handler = lambda args, options : add_command(command, args, options),
-    )
-
-def add_arg(name, arg, options):
-    if options[name]:
-        argument_error(messages.repeated_option.format(name), name)
-    else:
-        options[name] = arg
-
-def add_command(command, subargs, options):
-    if options['command']:
-        argument_error(messages.too_many_arguments, command)
-    else:
-        options['command'] = command
-        options['subargs'] = subargs
-
-def argument_error(message, arg):
-    args = ['mekpie'] + debug.args
+def argument_error(message, arg, args):
+    args = ['mekpie'] + args
     panic(f'{message}\n{tab(underline(arg, args))}')
