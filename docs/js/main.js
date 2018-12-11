@@ -5,7 +5,7 @@ function offsetAnchor() {
         window.scrollTo(window.scrollX, window.scrollY - 62);
     }
 }
-$(document).on('click', 'a[href^="#"]', function(event) {
+$(document).on('click', 'a[href^="#"]', function() {
     window.setTimeout(function() {
         offsetAnchor();
     }, 0);
@@ -127,11 +127,7 @@ function activate(elem) {
 
 function highlight(_, block) {
     var $this = $(this);
-    var lang  = $this
-        .parent()
-        .parent()
-        .attr('class')
-        .replace(/highlighter[^\s]*|language-|\s/g, '');
+    var lang  = $this.attr('class').split(' ')[0];
     $this
         .addClass(lang.replace('js', 'javascript'))
         .parent()
@@ -140,6 +136,3 @@ function highlight(_, block) {
 
     hljs.highlightBlock(block);
 }
-
-console.log('Try out type-mark out in the console!\n> type(4).string');
-console.log(type(4).string);

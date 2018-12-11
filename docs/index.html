@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Mekpie</title>
+        <meta name="description" content="The github pages site for Mekpie, building C made simple.">
+
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+        <link rel="stylesheet" href="css/spectre.min.css">
+        <link rel="stylesheet" href="css/spectre-exp.min.css">
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/animate.min.css">
+        <link rel="stylesheet" href="css/github.css">
+        <link rel="stylesheet" href="css/styles.css">
+
+        <script src="js/jquery.min.js" type="text/javascript"></script>
+        <script src="js/markdown.min.js" type="text/javascript"></script>
+        <script src="js/scrollfire.min.js" type="text/javascript"></script>
+        <script src="js/highlight.pack.js" type="text/javascript"></script>
+        <script src="js/main.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <main class="page-content animated fadeIn" aria-label="Content">
+            <div class="container">
+                <div class="columns">
+                    <div class="column hide-md col-1"></div>
+                    <div class="column hide-md col-2">
+                        <div id="side-nav" class="fixed block float-right">
+                            <br />
+                            <ul class="nav"></ul>
+                        </div>
+                    </div>
+                    <div class="column hide-xs show-md col-md-2 col-1"></div>
+                    <div class="content column col-xs-12 col-sm-10 col-md-8 col-6">
+                        <header id="top-nav" class="site-header navbar fixed">
+                            <section>
+                                <a href="/mekpie/" class="btn btn-link"><i class="fa fa-home" aria-hidden="true"></i> Home</a>
+                                <a href="https://github.com/ejrbuss/mekpie" class="btn btn-link"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a>
+                            </section>
+                        </header>
+                        <div class="home">
+                            <figure class="figure">
+                                <div class="centered animated pulse">
+                                    <svg id="logo" viewBox="0 0 400 350" width="57vh" height="50vh" class="centered" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                        <path id="path1" d="M15.117 164.287 C 15.052 176.119,15.090 205.025,15.200 228.521 L 15.400 271.243 33.800 282.396 L 52.200 293.549 52.302 251.342 C 52.358 228.128,52.545 209.194,52.718 209.267 C 52.890 209.340,60.960 214.215,70.650 220.099 L 88.268 230.798 88.534 262.065 C 88.680 279.262,88.800 298.415,88.800 304.627 L 88.800 315.922 106.500 326.635 C 116.235 332.527,124.605 337.605,125.100 337.920 L 126.000 338.492 126.000 274.282 L 126.000 210.073 108.900 199.687 C 99.495 193.975,82.710 183.767,71.600 177.002 C 53.068 165.717,16.187 143.313,15.517 142.934 C 15.361 142.845,15.181 152.454,15.117 164.287 M181.696 219.900 L 163.593 230.873 163.696 251.100 L 163.800 271.326 181.800 282.238 L 199.800 293.150 199.904 271.944 C 199.960 260.281,199.960 241.331,199.904 229.833 L 199.800 208.926 181.696 219.900 " stroke="none" fill="#5270ff" fill-rule="evenodd"></path>
+                                        <path id="path2" d="M218.000 154.076 C 207.550 160.458,191.440 170.273,182.200 175.887 C 172.960 181.502,163.960 187.032,162.200 188.175 C 160.440 189.319,151.577 194.743,142.505 200.228 L 126.010 210.200 126.005 274.300 C 126.002 309.555,126.115 338.400,126.256 338.400 C 126.396 338.400,134.856 333.345,145.056 327.166 L 163.600 315.932 163.607 293.666 C 163.611 281.420,163.608 262.282,163.600 251.139 L 163.586 230.877 181.693 219.902 L 199.800 208.927 199.902 251.063 C 199.958 274.238,200.118 293.200,200.258 293.200 C 200.397 293.200,208.856 288.145,219.056 281.966 L 237.600 270.732 237.600 206.566 C 237.600 171.275,237.465 142.417,237.300 142.437 C 237.135 142.457,228.450 147.695,218.000 154.076 M14.986 163.400 C 14.986 174.840,15.037 179.462,15.100 173.672 C 15.162 167.882,15.162 158.522,15.100 152.872 C 15.037 147.222,14.986 151.960,14.986 163.400 M14.993 228.800 C 14.993 252.230,15.041 261.815,15.100 250.100 C 15.159 238.385,15.159 219.215,15.100 207.500 C 15.041 195.785,14.993 205.370,14.993 228.800 M254.000 207.000 L 254.000 225.600 264.800 225.600 L 275.600 225.600 275.600 221.800 L 275.600 218.000 268.985 218.000 L 262.370 218.000 262.485 214.300 L 262.600 210.600 268.800 210.518 L 275.000 210.437 275.115 206.818 L 275.230 203.200 268.815 203.200 L 262.400 203.200 262.400 199.400 L 262.400 195.600 269.000 195.600 L 275.600 195.600 275.600 192.000 L 275.600 188.400 264.800 188.400 L 254.000 188.400 254.000 207.000 M282.400 207.000 L 282.400 225.600 286.392 225.600 L 290.384 225.600 290.492 217.300 L 290.600 209.000 296.352 217.132 C 303.032 226.578,301.731 225.654,308.155 225.513 L 313.267 225.400 306.006 216.261 C 302.012 211.235,298.826 206.915,298.925 206.661 C 299.024 206.407,302.179 202.195,305.936 197.300 L 312.767 188.400 307.484 188.405 L 302.200 188.410 296.400 196.627 L 290.600 204.845 290.492 196.622 L 290.384 188.400 286.392 188.400 L 282.400 188.400 282.400 207.000 M316.308 207.000 L 316.416 225.600 320.408 225.600 L 324.400 225.600 324.400 219.057 L 324.400 212.513 328.700 212.307 C 333.386 212.082,335.142 211.546,337.614 209.589 C 342.748 205.523,342.822 195.663,337.752 191.211 C 334.778 188.600,333.925 188.419,324.600 188.409 L 316.200 188.400 316.308 207.000 M345.600 207.000 L 345.600 225.600 349.800 225.600 L 354.000 225.600 354.000 207.000 L 354.000 188.400 349.800 188.400 L 345.600 188.400 345.600 207.000 M360.708 207.000 L 360.816 225.600 371.623 225.600 L 382.430 225.600 382.315 221.900 L 382.200 218.200 375.485 218.090 L 368.770 217.981 368.885 214.290 L 369.000 210.600 375.300 210.600 L 381.600 210.600 381.600 206.900 L 381.600 203.200 375.200 203.200 L 368.800 203.200 368.800 199.400 L 368.800 195.600 375.600 195.600 L 382.400 195.600 382.400 192.000 L 382.400 188.400 371.500 188.400 L 360.600 188.400 360.708 207.000 M331.184 195.454 C 334.331 197.313,334.480 202.945,331.435 204.941 C 330.725 205.406,329.540 205.600,327.414 205.600 L 324.400 205.600 324.400 200.200 L 324.400 194.800 327.238 194.800 C 329.148 194.800,330.439 195.014,331.184 195.454 M52.400 251.367 C 52.400 274.595,52.535 293.596,52.700 293.591 C 52.865 293.585,60.920 288.770,70.600 282.891 L 88.200 272.200 88.304 251.541 L 88.407 230.883 70.719 220.141 C 60.991 214.234,52.890 209.340,52.716 209.267 C 52.542 209.193,52.400 228.138,52.400 251.367 M88.587 294.200 C 88.587 306.300,88.637 311.308,88.700 305.328 C 88.762 299.349,88.762 289.449,88.700 283.328 C 88.638 277.208,88.587 282.100,88.587 294.200 " stroke="none" fill="#2db1ff" fill-rule="evenodd"></path>
+                                        <path id="path3" d="M180.400 131.283 C 169.950 137.664,153.434 147.724,143.698 153.637 L 125.997 164.390 107.498 153.150 C 97.324 146.968,80.858 136.967,70.907 130.925 C 60.955 124.882,52.578 119.998,52.290 120.069 C 50.390 120.543,14.915 142.632,15.523 142.962 C 16.350 143.412,44.267 160.357,71.600 177.001 C 108.852 199.684,125.348 209.682,125.828 209.866 C 126.247 210.027,155.939 192.306,162.800 187.800 C 165.238 186.199,174.559 180.515,218.400 153.893 C 228.190 147.948,236.525 142.862,236.922 142.589 C 237.663 142.081,201.354 119.539,199.956 119.640 C 199.650 119.662,190.850 124.901,180.400 131.283 " stroke="none" fill="#ffbc49" fill-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <figcaption class="figure-caption text-center" style="color:#ccc">v0.0.1</figcaption>
+                            </figure>
+                            <h2 id="makebuildingcassimpleaspie">Make Building C as Simple as Pie</h2>
+<p>Mekpie is an opinionated build system for small scale C projects. The core premise of Mekpie is that you should not be spending time worrying about Make files, compiler arguments, or build times, when working on a small C projects. By enforcing a simple directory structure and always providing a clean build, Mekpie saves you time and effort. For added convenience Mekpie takes notes from tools like <a href="https://doc.rust-lang.org/cargo/guide/index.html">Rust's cargo</a> and <a href="https://www.npmjs.com/">Node's npm</a> and provides options for building, running, cleaning, and testing your current project.</p>
+<p>Mekpie is a small scale project and is not supposed to replace tools like <a href="https://cmake.org/">CMake</a> or provide any sort of package management capabilities. Use Mekpie when the alternative is a shoddy Make file or manually compiling.</p>
+<h3 id="installing">Installing</h3>
+<p><em>Coming soon</em></p>
+<p>Mekpie is a python package. Use pip to install it!</p>
+<pre><code class="bash language-bash">$ pip install mekpie
+</code></pre>
+<h3 id="gettingstarted">Getting Started</h3>
+<p>Create a new project by running</p>
+<pre><code class="bash language-bash">$ mekpie new "project-name"
+project-name created succesfully!
+</code></pre>
+<p>Then navigate to the project directory and run</p>
+<pre><code class="bash language-bash">$ mekpie run
+Project succesfully cleaned.
+Project succesfully built.
+Hello, World!
+</code></pre>
+<p>That's it!</p>
+<h3 id="philosophy">Philosophy</h3>
+<p>History as a python script. Clean builds. No incremental builds. Small projects, running my Make file or python script took as long as compiling. Dislike IDEs for small projects.</p>
+<h3 id="creatingaproject">Creating a Project</h3>
+<p>Mekpie provides two commands for creating a project. <code>mekpie new</code> will attempt to create a new project as a subdirectory of your current location. You will have to provide Mekpie a name for your project. This name will be used as the name for the directory as well as the main <code>.c</code> file (don't worry you can change that later).</p>
+<p>Alternatively, you can use the <code>mekpie init</code> command to create a new project. In this case Mekpie will use the name of the current directory as the project name and setup the project in your current location. </p>
+<h3 id="projectstructure">Project Structure</h3>
+<p>When you create a project using either <code>new</code> or <code>init</code> the following directory structure will be generated.</p>
+<pre><code class="txt language-txt">project/
+    target/
+    includes/
+    src/
+        project-name.c
+    tests/
+    mek.py
+</code></pre>
+<p>The first folder generated by Mekpie, <code>target/</code>, is used to store the debug and release binaries generated for your program.</p>
+<p>The <code>includes/</code> folder is automatically included as an includes directory to your compiler, so you can place any header files you want included in this directory. You can also place subdirectories within <code>includes/</code>.</p>
+<p>The <code>src/</code> folder should contain all your <code>.c</code> files. Like <code>includes/</code> you can use subdirectories within. By default a main file will be generated by Mekpie with a simple Hello World program to heelp you ensure everything is working correctly.</p>
+<p>The <code>tests/</code> folder should contain all your test files. Jump <a href="#testing">here</a> to find out more about tests.</p>
+<p>The final file created by Mekpie is <code>mek.py</code> which is a small python file that allows you to configure Mekpie.</p>
+<h3 id="configuration">Configuration</h3>
+<pre><code class="python language-python"># This is a standard configuration file for mekpie
+
+# the name of your project
+name = 'project-name'
+# the .c file containing `main`
+main = 'project-name.c'
+# any libraries to load
+libs = []
+# the c compiler configuration to use (gcc/clang)
+cc = 'gcc/clang'
+# the c compiler command to use on the command line
+cmd = 'clang'
+# the debugger to use
+dbg = 'lldb'
+# additional compiler flags
+flags = []
+</code></pre>
+<h3 id="testing">Testing</h3>
+<h3 id="commands">Commands</h3>
+<h4 id="new"><code>new</code></h4>
+<h4 id="init"><code>init</code></h4>
+<h4 id="test"><code>test</code></h4>
+<h4 id="clean"><code>clean</code></h4>
+<h4 id="build"><code>build</code></h4>
+<h4 id="run"><code>run</code></h4>
+<h4 id="debug"><code>debug</code></h4>
+<h3 id="contact">Contact</h3>
+<p>Feel free to send be bug reports or feature requests. If you are interested in my other work, checkout my <a href="https://ejrbuss.net">website</a>.</p>
+<p>Email ejrbuss@gmail.com</p>
+                        </div>
+                        <footer class="site-footer">
+                            <div>
+                                <h3 class="text-center no-nav">Thanks</h3>
+                                <p class="text-center">
+                                    built with <i class="fa fa-heart" aria-hidden="true" style="color:#FFBB49"></i> using
+                                    <a href="https://pages.github.com/">GitHub pages</a> and
+                                    <a href="https://picturepan2.github.io/spectre/">spectre.css</a>,
+
+                                </p>
+                                <div class="divider"></div>
+                                <p class="text-center">
+                                    v0.0.1 © 2017 <a href="http://www.ejrbuss.net">Eric Buss</a>
+                                </p>
+                            </div>
+                        </footer>
+                    </div>
+                    <div class="column hide-xs col-sm-1 col-lg-2"></div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

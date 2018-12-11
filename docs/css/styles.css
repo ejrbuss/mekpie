@@ -1,7 +1,6 @@
----
----
-
-$primary-color: #00A79D;
+* {
+    --primary-color: rgb(88, 171, 232);
+}
 
 h1 code,
 h2 code,
@@ -14,13 +13,13 @@ h6 code {
 }
 
 .content a {
-    color: $primary-color !important;
+    color: var(--primary-color) !important;
 }
 .timeline-icon {
-    background-color: $primary-color !important;
+    background-color: var(--primary-color)  !important;
 }
 .nav-item.active {
-    border-left: 2px solid $primary-color;
+    border-left: 2px solid var(--primary-color) ;
 }
 
 #top-nav {
@@ -36,7 +35,8 @@ h6 code {
     overflow-y: auto !important;
     overflow-x: auto !important;
     height: calc(100% - 20px) !important;
-    a:hover {
-        color: $primary-color;
-    }
+}
+
+#side-nav a:hover {
+    color: var(--primary-color) ;
 }

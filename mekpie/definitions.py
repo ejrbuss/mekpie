@@ -42,7 +42,7 @@ name = '{}'
 main = '{}'
 # any libraries to load
 libs = []
-# the c compiler configuration to use (default, gcc, clang, cl)
+# the c compiler configuration to use (gcc/clang)
 cc = '{}'
 # the c compiler command to use on the command line
 cmd = '{}'
