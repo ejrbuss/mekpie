@@ -1,4 +1,4 @@
-![](/resources/logo.png)
+![](/resources/logo.svg)
 
 # Make Building C as Simple as Pie
 
