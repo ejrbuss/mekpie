@@ -18,14 +18,16 @@ Options = namedtuple('Options', [
 ])
 
 Config = namedtuple('Config', [
-    'name',     # Project name
-    'main',     # Entry point
-    'libs',     # Libraries to link
-    'cc',       # C Compiler Configuration
-    'cmd',      # The C Compiler command
-    'dbg',      # Debugger
-    'flags',    # User compiler flags
-    'options',  # The provided command line options
+    'name',                   # Project name
+    'main',                   # Entry point
+    'libs',                   # Libraries to link
+    'cc',                     # C Compiler Configuration
+    'cmd',                    # The C Compiler command
+    'dbg',                    # Debugger
+    'flags',                  # User compiler flags
+    'override_debug_flags',   # Override config debug flags 
+    'override_release_flags', # Override config release flags
+    'options',                # The provided command line options
 ])
 
 CC_CMDS = {
@@ -37,7 +39,7 @@ DEFAULT_MEKPY='''
 # This is a standard configuration file for mekpie
 
 # the name of your project
-name = '{}'
+name = '{}' 
 # the .c file containing `main`
 main = '{}'
 # any libraries to load
@@ -49,7 +51,16 @@ cmd = '{}'
 # the debugger to use
 dbg = '{}'
 # additional compiler flags
-flags = []
+flags = ['-Wall']
+# Provide a list to override the c compiler configuration default
+override_debug_flags = None
+# Provide a list to override the c compiler configuration default
+override_release_flags = None
+
+if options.release:
+    pass # this code will only run for release builds
+else:
+    pass # this code will only run for debug builds
 '''
 
 MAIN = '''

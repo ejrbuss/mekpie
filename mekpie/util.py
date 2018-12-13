@@ -139,16 +139,15 @@ def same_dir(dir1, dir2):
         ])
     return recursive(dircmp(dir1, dir2))
 
-def exec_str(source, handle):
-    ctx = {}
+def exec_str(source, handle, ctx={}):
     try:
         exec(source, ctx)
     except Exception as err:
         panic(messages.execution_error.format(handle, tab(str(err))))
     return ctx
 
-def exec_file(path):
-    return exec_str(file_as_str(path), path)
+def exec_file(path, ctx={}):
+    return exec_str(file_as_str(path), path, ctx)
 
 # Types
 # ---------------------------------------------------------------------------- #

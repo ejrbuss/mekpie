@@ -33,7 +33,7 @@ def command_new(options):
     create_tests()
     create_includes()
     create_target()
-    config_from_dict(exec_str(get_mekpy_source(name), 'default mek.py'), options)
+    config_from_dict(exec_str(get_mekpy_source(name), 'default mek.py', { 'options': options }), options)
     print(messages.created.format(name).strip())
 
 def command_init(options):
@@ -44,7 +44,7 @@ def command_init(options):
     create_tests()
     create_includes()
     create_target()
-    config_from_dict(exec_str(get_mekpy_source(name), 'default mek.py'), options)
+    config_from_dict(exec_str(get_mekpy_source(name), 'default mek.py', { 'options': options }), options)
     print(messages.initialized.format(name).strip())
 
 def check_name(name):
