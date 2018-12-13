@@ -2,7 +2,7 @@ const fs = require('fs');
 const showdown = require('showdown');
 const mustache = require('mustache');
 
-const converter = new showdown.Converter();
+const converter = new showdown.Converter({ tables: true });
 
 const ctx = {
     version: 'v0.0.1'
