@@ -1,12 +1,9 @@
-# External imports
 from os.path import isdir, curdir, join
 from os      import chdir
 from os.path import basename, abspath, exists
 
-# Qualified local imports
 import mekpie.messages as messages
 
-# Local imports
 from .util        import panic, empty, car, smkdir, exec_str
 from .config      import config_from_dict
 from .autodetect  import autodetect_compiler

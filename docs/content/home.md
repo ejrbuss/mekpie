@@ -6,8 +6,6 @@ Mekpie is a small-scale project and is not supposed to replace tools like [CMake
 
 ### Installing
 
-*Coming soon*
-
 Mekpie is a python package. Use pip to install it!
 ```bash
 $ pip install mekpie

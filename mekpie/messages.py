@@ -1,4 +1,3 @@
-# Local Imports
 from .definitions import VERSION
 
 usage = '''
@@ -150,17 +149,17 @@ Build failed: cannot launch debugger for a release build
 '''
 
 created = '''
-{} created succesfully!
+{} created successfully!
 '''
 
 initialized = '''
-{} initialized succesfully!
+{} initialized successfully!
 '''
 
 clean = '''
-Project succesfully cleaned.
+Project successfully cleaned.
 '''
 
 build_succeeded = '''
-Project succesfully built.
+Project successfully built.
 '''

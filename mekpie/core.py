@@ -1,13 +1,10 @@
-# External imports
 from os      import curdir, chdir, curdir
 from sys     import argv
 from os.path import abspath
 
-# Qualified local imports
 import mekpie.debug    as debug
 import mekpie.messages as messages
 
-# Local imports
 from .util        import log, car, cdr, last, panic, file_as_str, check_is_dir
 from .config      import get_config
 from .arguments   import parse_arguments, pre_config_commands

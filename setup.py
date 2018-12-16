@@ -23,13 +23,13 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.1',
+    version='0.0.2',
 
-    description='mekpie: bakes your C code into a delicous pie',
+    description='Make Building C as Simple as Pie',
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/ejrbuss/mekpie',
+    url='https://ejrbuss.net/mekpie/',
 
     # Author details
     author='Eric Buss',
@@ -96,7 +96,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'mekpie=mekpie.__main__:main',
+            'mekpie=mekpie.core:main',
         ],
     },
 )

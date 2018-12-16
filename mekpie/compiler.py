@@ -3,7 +3,6 @@ from collections import namedtuple
 
 import mekpie.messages as messages
 
-# Local imports
 from .util         import panic, list_files, remove_contents, filename
 from .runner       import lrun
 from .structure    import (
