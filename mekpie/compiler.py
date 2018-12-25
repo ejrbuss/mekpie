@@ -31,8 +31,7 @@ def command_build(cfg):
     command_clean(cfg)
     sources = get_sources(cfg)
     mains   = [get_main_path(cfg.main), *list_files(get_test_path(), with_ext='.c')]
-    for main in mains:
-        compiler_configs[cfg.cc](cfg, sources, main)
+    compiler_configs[cfg.cc](cfg, sources, mains)
     if not cfg.options.quiet:
         print(messages.build_succeeded.strip())
 
@@ -57,9 +56,12 @@ def get_tests(cfg):
         (filename(test) in cfg.options.commandargs or len(cfg.options.commandargs) == 0)
     )
 
-def get_bin_path(cfg, main):
+def get_bin_path(cfg, path):
     root = get_target_release_path() if cfg.options.release else get_target_debug_path()
-    return join(root, filename(main))
+    return join(root, filename(path))
+
+def get_object_path(cfg, path):
+    pass
 
 def get_sources(cfg):
     sources = list_files(get_src_path(), with_ext='.c')
@@ -73,22 +75,33 @@ def get_includes_paths():
 # Compiler Configs
 # ---------------------------------------------------------------------------- #
 
-def gcc_clang_config(cfg, sources, main):
-    sources = sources + [main]
-    flags = cfg.flags + (['-v']        
-        if cfg.options.verbose 
-        else []
-    )
-    libs = ['-l' + lib for lib in cfg.libs]
+def gcc_clang_config(cfg, sources, mains):
+    sources  = sources
+    verbose  = ['-v'] if cfg.options.verbose else []
+    libs     = ['-l' + lib for lib in cfg.libs]
     includes = ['-I' + inc for inc in get_includes_paths()]
-    lrun([
-        cfg.cmd, 
-        *sources,
-        *flags, 
-        *libs,
-        *includes,
-        '-o', get_bin_path(cfg, main)
-    ])
+    flags    = cfg.flags + verbose + libs + includes
+    # Build objects
+    for source in sources:
+        lrun([
+            cfg.cmd, 
+            *flags, 
+            '-c', source,
+            '-o', get_bin_path(cfg, source) + '.o'
+        ])
+    # Link
+    objects = [get_bin_path(cfg, source) + '.o'
+        for source 
+        in sources
+    ]
+    for main in mains:
+        lrun([
+            cfg.cmd,
+            main,
+            *objects,
+            *flags, 
+            '-o' , get_bin_path(cfg, main)
+        ])
 
 compiler_configs = {
     'gcc/clang' : gcc_clang_config,
