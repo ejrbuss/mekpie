@@ -65,18 +65,10 @@ def get_sources(cfg):
 
 def gcc_clang_config(cfg, sources, main):
     sources = sources + [main]
-    debug_flags = (['-g'] 
-        if cfg.override_debug_flags is None 
-        else cfg.override_debug_flags)
-    release_flags = (['-O'] 
-        if cfg.override_release_flags is None      
-        else cfg.override_release_flags)
-    flags = cfg.flags + (release_flags 
-        if cfg.options.release 
-        else debug_flags)
-    flags = flags + (['-v']        
+    flags = cfg.flags + (['-v']        
         if cfg.options.verbose 
-        else [])
+        else []
+    )
     libs = ['-l' + lib for lib in cfg.libs]
     lrun([
         cfg.cmd, 

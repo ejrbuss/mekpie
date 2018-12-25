@@ -64,7 +64,7 @@ The final file created by Mekpie is `mek.py` which is a small python file that a
 
 ### Configuration
 
-Configuration of Mekpie is done through the python file `mek.py` in the root of your project directory. Mekpie will autogenerate a file like the following when you first create a project.
+Configuration of Mekpie is done through the python file `mek.py` in the root of your project directory. Mekpie will autogenerate a file like the following when you first create a project. Release and debug flags are also automatically generated based on the detected compiler.
 
 ```python
 # This is a standard configuration file for mekpie
@@ -76,13 +76,11 @@ cc = 'gcc/clang'
 cmd = 'clang'
 dbg = 'lldb'
 flags = ['-Wall']
-override_debug_flags = None
-override_release_flags = None
 
 if options.release:
-    pass # this code will only run for release builds
+    flags = flags + ['-O']
 else:
-    pass # this code will only run for debug builds
+    flags = flags + ['-g']
 ```
 
 As shown at the bottom of the configuration file, the command line options for the current build command will be provided to your configuration anytime it is read. This allows you to easily change your configuration depending on the build. In addition to release, the options object also provides `options.quiet`, `options.verbose`, and `options.developer` which correspond to their respective command line flags.
@@ -98,8 +96,6 @@ The following table describes each option in detail.
 |`cmd` | *auto-detected* | The command on the command line that corresponds to your c compiler. By default, mekpie will try to auto-detect this. |
 | `dbg` | *auto-detected* | The command on the command line used to start your desired debugger. By default, mekpie will try to auto-detect this. |
 | `flags` | `[]` | These flags will be passed to the compiler whenever a file is compiled. For instance, to always produce verbose output from the compiler, flags could be changed to `[-v]`. |
-| `override_debug_flags` | `None` | If this option is replaced with a list of strings, it will replace the c compiler configuration's choice of flags for debug builds. |
-| `override_release_flags` | `None` | If this option is replaced with a list of strings, it will replace the c compiler configuration's choice of flags for release builds. |
 
 ### Running
 

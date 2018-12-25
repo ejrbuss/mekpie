@@ -25,14 +25,32 @@ Config = namedtuple('Config', [
     'cmd',                    # The C Compiler command
     'dbg',                    # Debugger
     'flags',                  # User compiler flags
-    'override_debug_flags',   # Override config debug flags 
-    'override_release_flags', # Override config release flags
     'options',                # The provided command line options
 ])
 
+CompilerPreset = namedtuple('CompilerPreset', [
+    'cc',           # the compiler config
+    'cmd',          # the compiler command
+    'dbg',          # the debug command
+    'dbg_flags',    # the debug flags
+    'release_flags' # the release flags
+])
+
 CC_CMDS = {
-    'clang' : ('gcc/clang', 'clang', 'lldb'),
-    'gcc'   : ('gcc/clang', 'gcc',   'gdb'), 
+    'clang' : CompilerPreset(
+        cc            = 'gcc/clang',
+        cmd           = 'clang',
+        dbg           = 'lldb',
+        dbg_flags     = '[\'-g\']',
+        release_flags = '[\'-O\']',
+    ),
+    'gcc' : CompilerPreset(
+        cc            = 'gcc/clang',
+        cmd           = 'gcc',
+        dbg           = 'gdb',
+        dbg_flags     = '[\'-g\']',
+        release_flags = '[\'-O\']',
+    ),
 }
 
 DEFAULT_MEKPY='''
@@ -52,15 +70,11 @@ cmd = '{}'
 dbg = '{}'
 # additional compiler flags
 flags = ['-Wall']
-# Provide a list to override the c compiler configuration default
-override_debug_flags = None
-# Provide a list to override the c compiler configuration default
-override_release_flags = None
 
 if options.release:
-    pass # this code will only run for release builds
+    flags = flags + {}
 else:
-    pass # this code will only run for debug builds
+    flags = flags + {}
 '''
 
 MAIN = '''

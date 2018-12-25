@@ -11,16 +11,14 @@ def get_config(options):
 
 def config_from_dict(config_dict, options):
     return check_config(Config(
-        name                   = config_dict.get('name',                   None),
-        main                   = config_dict.get('main',                   None),
-        libs                   = config_dict.get('libs',                   []),
-        cc                     = config_dict.get('cc',                     'gcc/clang'),
-        cmd                    = config_dict.get('cmd',                    'cc'),
-        dbg                    = config_dict.get('dbg',                    'gdb'),
-        flags                  = config_dict.get('flags',                  []),
-        override_debug_flags   = config_dict.get('override_debug_flags',   None),
-        override_release_flags = config_dict.get('override_release_flags', None),
-        options                = options,
+        name    = config_dict.get('name',  None),
+        main    = config_dict.get('main',  None),
+        libs    = config_dict.get('libs',  []),
+        cc      = config_dict.get('cc',    'gcc/clang'),
+        cmd     = config_dict.get('cmd',   'cc'),
+        dbg     = config_dict.get('dbg',   'gdb'),
+        flags   = config_dict.get('flags', []),
+        options = options,
     ))
 
 def check_config(config):
@@ -31,8 +29,6 @@ def check_config(config):
     check_cmd(config.cc)
     check_dbg(config.dbg)
     check_flags(config.flags)
-    check_override_debug_flags(config.override_debug_flags)
-    check_override_release_flags(config.override_release_flags)
     return config
 
 def check_name(name):
@@ -61,18 +57,6 @@ def check_flags(flags):
     for flag in flags:
         check_type('flags', flag, str)
 
-def check_override_debug_flags(flags):
-    if flags is not None:
-        check_type('override_debug_flags', flags, list)
-        for flag in flags:
-            check_type('override_debug_flags', flag, str)
-
-def check_override_release_flags(flags):
-    if flags is not None:
-        check_type('override_release_flags', flags, list)
-        for flag in flags:
-            check_type('override_release_flags', flag, str)
-
 def check_type(name, value, *expected_types):
     if all([type(value) != exp for exp in expected_types]):
         panic(messages.type_error.format(
@@ -91,6 +75,4 @@ def get_description(name):
         'cmd'                    : '`cmd` specified the c compiler command',
         'dbg'                    : '`dbg` specifies the debugger to use',
         'flags'                  : '`flags` specifies additional compiler flags',
-        'override_debug_flags'   : '`override_debug_flags` overrides debug flags',
-        'override_release_flags' : '`override_release_flags` overrides release flags',
     }[name]

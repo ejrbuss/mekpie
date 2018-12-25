@@ -83,5 +83,13 @@ def get_main_source():
     return MAIN + '\n'
 
 def get_mekpy_source(name):
-    cc, cmd, dbg = autodetect_compiler()
-    return DEFAULT_MEKPY.format(name, name + '.c', cc, cmd, dbg)
+    compiler_preset = autodetect_compiler()
+    return DEFAULT_MEKPY.format(
+        name, 
+        name + '.c', 
+        compiler_preset.cc, 
+        compiler_preset.cmd, 
+        compiler_preset.dbg,
+        compiler_preset.release_flags,
+        compiler_preset.dbg_flags,
+    )
