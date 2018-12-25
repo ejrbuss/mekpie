@@ -38,7 +38,7 @@ def command_build(cfg):
 
 def command_run(cfg):
     command_build(cfg)
-    lrun([get_bin_path(cfg, get_main_path(cfg.main))] + cfg.options.programargs)
+    lrun([get_bin_path(cfg, get_main_path(cfg.main))] + cfg.options.programargs, error=False)
 
 def command_debug(cfg):
     if cfg.options.release:
@@ -49,7 +49,7 @@ def command_debug(cfg):
 def command_test(cfg):
     command_build(cfg)
     for test in get_tests(cfg):
-        lrun([get_bin_path(cfg, test)])
+        lrun([get_bin_path(cfg, test)], error=False)
 
 def get_tests(cfg):
     return list_files(get_test_path(), with_filter=lambda test : 
