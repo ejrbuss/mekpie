@@ -80,7 +80,7 @@ def gcc_clang_config(cfg, sources, mains):
     verbose  = ['-v'] if cfg.options.verbose else []
     libs     = ['-l' + lib for lib in cfg.libs]
     includes = ['-I' + inc for inc in get_includes_paths()]
-    flags    = cfg.flags + verbose + libs + includes
+    flags    = cfg.flags + verbose + includes
     # Build objects
     for source in sources:
         lrun([
@@ -94,6 +94,7 @@ def gcc_clang_config(cfg, sources, mains):
         for source 
         in sources
     ]
+    flags = flags + libs
     for main in mains:
         lrun([
             cfg.cmd,
