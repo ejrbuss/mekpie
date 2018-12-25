@@ -3,7 +3,13 @@ from collections import namedtuple
 
 import mekpie.messages as messages
 
-from .util         import panic, list_files, remove_contents, filename
+from .util         import (
+    panic, 
+    list_files, 
+    list_all_dirs,
+    remove_contents, 
+    filename, 
+)
 from .runner       import lrun
 from .structure    import (
     get_test_path,
@@ -60,6 +66,10 @@ def get_sources(cfg):
     sources.remove(get_main_path(cfg.main))
     return sources
 
+def get_includes_paths():
+    includes = get_includes_path()
+    return [includes] + list_all_dirs(includes)
+
 # Compiler Configs
 # ---------------------------------------------------------------------------- #
 
@@ -70,12 +80,13 @@ def gcc_clang_config(cfg, sources, main):
         else []
     )
     libs = ['-l' + lib for lib in cfg.libs]
+    includes = ['-I' + inc for inc in get_includes_paths()]
     lrun([
         cfg.cmd, 
         *sources,
         *flags, 
         *libs,
-        '-I' + get_includes_path(), 
+        *includes,
         '-o', get_bin_path(cfg, main)
     ])
 

@@ -106,6 +106,14 @@ def list_all_files(path):
         in walk(path)
     ])
 
+def list_all_dirs(path):
+    return flatten([[join(path, pre)
+            for pre 
+            in pres]
+        for (_, pres, posts)
+        in walk(path)
+    ])
+
 def filename(path):
     return splitext(basename(path))[0]
 
