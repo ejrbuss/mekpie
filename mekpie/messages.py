@@ -161,5 +161,5 @@ Project successfully cleaned.
 '''
 
 build_succeeded = '''
-Project successfully built.
+Project successfully built. ({:.3f}s)
 '''

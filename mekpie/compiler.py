@@ -1,3 +1,4 @@
+from time        import time
 from os.path     import join
 from collections import namedtuple
 
@@ -29,11 +30,12 @@ def command_clean(cfg):
 
 def command_build(cfg):
     command_clean(cfg)
+    start   = time()
     sources = get_sources(cfg)
     mains   = [get_main_path(cfg.main), *list_files(get_test_path(), with_ext='.c')]
     compiler_configs[cfg.cc](cfg, sources, mains)
     if not cfg.options.quiet:
-        print(messages.build_succeeded.strip())
+        print(messages.build_succeeded.format(time() - start).strip())
 
 def command_run(cfg):
     command_build(cfg)
