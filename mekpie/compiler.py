@@ -1,6 +1,7 @@
-from time        import time
-from os.path     import join
-from collections import namedtuple
+from time               import time
+from os.path            import join
+from collections        import namedtuple
+from concurrent.futures import ThreadPoolExecutor
 
 import mekpie.messages as messages
 
@@ -83,29 +84,30 @@ def gcc_clang_config(cfg, sources, mains):
     libs     = ['-l' + lib for lib in cfg.libs]
     includes = ['-I' + inc for inc in get_includes_paths()]
     flags    = cfg.flags + verbose + includes
+    objects  = [get_bin_path(cfg, source) + '.o'
+        for source 
+        in sources
+    ]
     # Build objects
-    for source in sources:
-        lrun([
+    with ThreadPoolExecutor(max_workers=4) as e:
+        e.map(lambda source: lrun([
             cfg.cmd, 
             *flags, 
             '-c', source,
             '-o', get_bin_path(cfg, source) + '.o'
-        ])
-    # Link
-    objects = [get_bin_path(cfg, source) + '.o'
-        for source 
-        in sources
-    ]
+        ]), sources)
+
     flags = flags + libs
-    for main in mains:
-        lrun([
+    # Link executables
+    with ThreadPoolExecutor(max_workers=4) as e:
+        e.map(lambda main : lrun([
             cfg.cmd,
             main,
             *objects,
             *flags, 
             '-o' , get_bin_path(cfg, main)
-        ])
-
+        ]), mains)
+        
 compiler_configs = {
     'gcc/clang' : gcc_clang_config,
 }
