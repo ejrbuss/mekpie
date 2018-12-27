@@ -51,7 +51,7 @@ def command_debug(cfg):
 def command_test(cfg):
     command_build(cfg)
     for test in get_tests(cfg):
-        lrun([get_bin_path(cfg, test)], error=False)
+        lrun([get_bin_path(cfg, test)])
 
 def get_tests(cfg):
     return list_files(get_test_path(), with_filter=lambda test : 
@@ -62,9 +62,6 @@ def get_tests(cfg):
 def get_bin_path(cfg, path):
     root = get_target_release_path() if cfg.options.release else get_target_debug_path()
     return join(root, filename(path))
-
-def get_object_path(cfg, path):
-    pass
 
 def get_sources(cfg):
     sources = list_files(get_src_path(), with_ext='.c')
