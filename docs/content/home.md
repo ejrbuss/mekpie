@@ -23,7 +23,7 @@ Then navigate to the project directory and run
 ```bash
 $ mekpie run
 Project successfully cleaned.
-Project successfully built.
+Project successfully built. (0.060s)
 Hello, World!
 ```
 
@@ -202,6 +202,15 @@ Usage
 $ mekpie [--quiet|--changedir|--developer] debug
 ```
 
+#### `dist`
+
+Cleans, builds, and then copies an executable into the project root. The executable will be given the sanme name as the project.
+
+Usage
+```bash
+$ mekpie [--release|--quite|--changdir|--developer] dist
+```
+
 ### Options
 
 The following table describes Mekpie's command line options.
@@ -221,4 +230,3 @@ The following table describes Mekpie's command line options.
 Feel free to send be bug reports or feature requests. If you are interested in my other work, checkout my [website](https://ejrbuss.net).
 
 Email ejrbuss@gmail.com
-

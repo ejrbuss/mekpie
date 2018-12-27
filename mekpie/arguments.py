@@ -19,6 +19,7 @@ from .compiler import (
     command_clean,
     command_build,
     command_debug,
+    command_dist,
 )
 
 def command_help(cfg):
@@ -63,6 +64,7 @@ def available_options():
         command(command_run,     ['run']),
         command(command_test,    ['test']),
         command(command_debug,   ['debug']),
+        command(command_dist,    ['dist']),
     ]
 
 def parse_arguments(args):

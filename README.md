@@ -25,7 +25,7 @@ Then navigate to the project directory and run
 ```bash
 $ mekpie run
 Project succesfully cleaned.
-Project succesfully built.
+Project succesfully built. (0.060s)
 Hello, World!
 ```
 

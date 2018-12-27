@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import mekpie.messages as messages
 
 from .util         import (
+    smv,
     panic, 
     list_files, 
     list_all_dirs,
@@ -14,6 +15,7 @@ from .util         import (
 )
 from .runner       import lrun
 from .structure    import (
+    get_project_path,
     get_test_path,
     get_target_path,
     get_target_debug_path,
@@ -22,6 +24,8 @@ from .structure    import (
     get_src_path,
     get_includes_path,
 )
+
+max_threads = 32
 
 def command_clean(cfg):
     remove_contents(get_target_debug_path())
@@ -59,6 +63,13 @@ def get_tests(cfg):
         (filename(test) in cfg.options.commandargs or len(cfg.options.commandargs) == 0)
     )
 
+def command_dist(cfg):
+    command_build(cfg)
+    smv(
+        get_bin_path(cfg, get_main_path(cfg.main)), 
+        join(get_project_path(), cfg.name)
+    )
+
 def get_bin_path(cfg, path):
     root = get_target_release_path() if cfg.options.release else get_target_debug_path()
     return join(root, filename(path))
@@ -86,7 +97,7 @@ def gcc_clang_config(cfg, sources, mains):
         in sources
     ]
     # Build objects
-    with ThreadPoolExecutor(max_workers=4) as e:
+    with ThreadPoolExecutor(max_workers=min(len(sources), max_threads)) as e:
         e.map(lambda source: lrun([
             cfg.cmd, 
             *flags, 
@@ -96,7 +107,7 @@ def gcc_clang_config(cfg, sources, mains):
 
     flags = flags + libs
     # Link executables
-    with ThreadPoolExecutor(max_workers=4) as e:
+    with ThreadPoolExecutor(max_workers=min(len(mains), max_threads)) as e:
         e.map(lambda main : lrun([
             cfg.cmd,
             main,

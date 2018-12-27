@@ -20,6 +20,7 @@ Commands:
     build           Compile the current project
     run             Build and execute main
     debug           Build and execute under a debugger
+    dist            Create an executable in the project root
 
 '''
 
@@ -42,6 +43,7 @@ Invalid command: No command provided!
         build       Compile the current project
         run         Build and execute main
         debug       Build and execute under a debugger
+        dist        Create an executable in the project root
 '''
 
 repeated_option = 'Repeated option: option {} appears twice!'
