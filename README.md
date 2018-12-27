@@ -1,4 +1,4 @@
-![](/resources/logo.svg)
+[![logo](/resources/logo.svg)](https://ejrbuss.net/mekpie/)
 
 # Make Building C as Simple as Pie
 
