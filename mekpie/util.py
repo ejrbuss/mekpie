@@ -1,5 +1,5 @@
 from re      import sub
-from os      import walk, mkdir, rename
+from os      import walk, mkdir, rename, remove
 from sys     import stderr
 from shutil  import rmtree
 from os.path import isfile, isdir, join, basename, splitext, exists
@@ -91,8 +91,9 @@ def srmtree(path):
     if exists(path):
         rmtree(path)
 
+
 def smv(source, destination):
-    srmtree(destination)
+    remove(destination)
     if exists(source):
         rename(source, destination)
 
