@@ -14,11 +14,14 @@ def lrun(args, quiet=False, error=True):
         else:
             if run(args).returncode != 0:
                 raise OSError
+        return True
     except KeyboardInterrupt:
-        exit()
+        exit(1)
     except OSError:
         if error:
             panic(messages.failed_program_call.format(serialize_command(args)))
+        else:
+            False
 
 def serialize_command(args):
     return '$ ' + ' '.join(args)

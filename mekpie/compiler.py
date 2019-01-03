@@ -98,23 +98,37 @@ def gcc_clang_config(cfg, sources, mains):
     ]
     # Build objects
     with ThreadPoolExecutor(max_workers=min(len(sources), max_threads)) as e:
-        e.map(lambda source: lrun([
+        results = e.map(lambda source: lrun([
             cfg.cmd, 
             *flags, 
             '-c', source,
             '-o', get_bin_path(cfg, source) + '.o'
-        ]), sources)
+        ], quiet=cfg.options.quiet, error=False), sources)
+
+    if not all(results):
+        exit(1)
+
 
     flags = flags + libs
     # Link executables
     with ThreadPoolExecutor(max_workers=min(len(mains), max_threads)) as e:
-        e.map(lambda main : lrun([
+        results = e.map(lambda main : lrun([
             cfg.cmd,
             main,
             *objects,
             *flags, 
             '-o' , get_bin_path(cfg, main)
-        ]), mains)
+        ], quiet=True, error=False), mains)
+
+    if not all(results):
+        for main in mains:
+            lrun([
+                cfg.cmd,
+                main,
+                *objects,
+                *flags,
+                '-o' , get_bin_path(cfg, main)
+            ], quiet=cfg.options.quiet)
         
 compiler_configs = {
     'gcc/clang' : gcc_clang_config,

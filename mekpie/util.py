@@ -15,7 +15,11 @@ def panic(message=None):
     if message is None:
         exit(1)
     errprint(f'\n{message.strip()}\n\n')
-    raise Exception('Debug') if debug.debug else exit(1)
+    if debug.debug:
+        raise Exception('Debug')
+    else:
+        exit(1)
+    
 
 def log(message):
     errprint(f' -- {tab(str(message)).strip()}\n') if debug.debug else None
