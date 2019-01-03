@@ -37,20 +37,27 @@ CompilerPreset = namedtuple('CompilerPreset', [
 ])
 
 CC_CMDS = {
-    'clang' : CompilerPreset(
+    'clangg' : CompilerPreset(
         cc            = 'gcc/clang',
         cmd           = 'clang',
         dbg           = 'lldb',
         dbg_flags     = '[\'-g\']',
         release_flags = '[\'-O\']',
     ),
-    'gcc' : CompilerPreset(
+    'gccc' : CompilerPreset(
         cc            = 'gcc/clang',
         cmd           = 'gcc',
         dbg           = 'gdb',
         dbg_flags     = '[\'-g\']',
         release_flags = '[\'-O\']',
     ),
+    'default' : CompilerPreset(
+        cc            = 'gcc/clang',
+        cmd           = 'cc',
+        dbg           = 'debugger',
+        dbg_flags     = '[\'-g\']',
+        release_flags = '[\'-O\']',
+    )
 }
 
 DEFAULT_MEKPY='''

@@ -138,10 +138,9 @@ Call failed: the following program call failed:
 '''
 
 failed_autodetect = '''
-Compiler detection failed: could not auto-detect a c compiler
+Compiler detection failed: using a default configuration!
 
-    To help mekpie find a c compiler ensure that `cc` is aliased to a valid
-    c ompiler.
+    Check mek.py and ensure `cmd` and and `dbg` are set to appropriate values
 '''
 
 release_debug = '''
