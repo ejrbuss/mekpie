@@ -97,7 +97,7 @@ def gcc_clang_config(cfg, sources, mains):
         in sources
     ]
     # Build objects
-    with ThreadPoolExecutor(max_workers=min(len(sources), max_threads)) as e:
+    with ThreadPoolExecutor(max_workers=max(1, min(len(sources), max_threads))) as e:
         results = e.map(lambda source: lrun([
             cfg.cmd, 
             *flags, 
@@ -111,7 +111,7 @@ def gcc_clang_config(cfg, sources, mains):
 
     flags = flags + libs
     # Link executables
-    with ThreadPoolExecutor(max_workers=min(len(mains), max_threads)) as e:
+    with ThreadPoolExecutor(max_workers=max(1, min(len(mains), max_threads))) as e:
         results = e.map(lambda main : lrun([
             cfg.cmd,
             main,

@@ -37,14 +37,14 @@ CompilerPreset = namedtuple('CompilerPreset', [
 ])
 
 CC_CMDS = {
-    'clangg' : CompilerPreset(
+    'clang' : CompilerPreset(
         cc            = 'gcc/clang',
         cmd           = 'clang',
         dbg           = 'lldb',
         dbg_flags     = '[\'-g\']',
         release_flags = '[\'-O\']',
     ),
-    'gccc' : CompilerPreset(
+    'gcc' : CompilerPreset(
         cc            = 'gcc/clang',
         cmd           = 'gcc',
         dbg           = 'gdb',
