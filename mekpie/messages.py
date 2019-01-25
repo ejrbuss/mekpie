@@ -7,11 +7,11 @@ Usage:
 Options:
     -h, --help      Display this message
     -V, --version   Print version info and exit
-    -v, --verbose   Use verbose output
     -q, --quiet     No output to stdout
     -r, --release   Run the command for release
-    -d, --developer Run mekpie in developer mode
+    -m, --mode      Provide a mode
     -c, --changedir Run the mekpie command in the provided directory
+    -d, --developer Run mekpie in developer mode
 
 Commands:
     new  <name>     Create a new mekpie project

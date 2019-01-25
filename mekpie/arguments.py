@@ -39,10 +39,10 @@ def pre_config_commands():
 def default_options():
     return Options(
         quiet       = False,
-        verbose     = False,
         release     = False,
         developer   = False,
         changedir   = False,
+        mode        = None,
         command     = None,
         commandargs = [],
         programargs = [],
@@ -51,9 +51,9 @@ def default_options():
 def available_options():
     return [
         flag('quiet',            ['-q', '--quiet']),
-        flag('verbose',          ['-v', '--verbose']),
         flag('release',          ['-r', '--release']),
         flag('developer',        ['-d', '--developer']),
+        flag('mode',             ['-m', '--mode'], 2),
         flag('changedir',        ['-c', '--changedir'], 2),
         command(command_help,    ['-h', '--help', 'help']),
         command(command_version, ['-V', '--version', 'version']),

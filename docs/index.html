@@ -108,7 +108,7 @@ if options.release:
 else:
     flags = flags + ['-g']
 </code></pre>
-<p>As shown at the bottom of the configuration file, the command line options for the current build command will be provided to your configuration anytime it is read. This allows you to easily change your configuration depending on the build. In addition to release, the options object also provides <code>options.quiet</code>, <code>options.verbose</code>, and <code>options.developer</code> which correspond to their respective command line flags.</p>
+<p>As shown at the bottom of the configuration file, the command line options for the current build command will be provided to your configuration anytime it is read. This allows you to easily change your configuration depending on the build. In addition to release, the options object also provides <code>options.quiet</code>, <code>options.developer</code>, and <code>options.mode</code> which correspond to their respective command line flags.</p>
 <p>The following table describes each option in detail.</p>
 <table>
 <thead>
@@ -244,9 +244,9 @@ $ mekpie test project-tests
 <td>Prints version info and exits.</td>
 </tr>
 <tr>
-<td><code>verbose</code></td>
-<td><code>-v</code></td>
-<td>Provides the verbose flag to the c compiler when building your project.</td>
+<td><code>mode</code></td>
+<td><code>-m</code></td>
+<td>Provide a mode to the mekpie file.</td>
 </tr>
 <tr>
 <td><code>quiet</code></td>

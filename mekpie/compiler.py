@@ -88,10 +88,9 @@ def get_includes_paths():
 
 def gcc_clang_config(cfg, sources, mains):
     sources  = sources
-    verbose  = ['-v'] if cfg.options.verbose else []
     libs     = ['-l' + lib for lib in cfg.libs]
     includes = ['-I' + inc for inc in get_includes_paths()]
-    flags    = cfg.flags + verbose + includes
+    flags    = cfg.flags + includes
     objects  = [get_bin_path(cfg, source) + '.o'
         for source 
         in sources

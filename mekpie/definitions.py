@@ -8,9 +8,9 @@ Option = namedtuple('Option', [
 
 Options = namedtuple('Options', [
     'quiet',       # -q --quiet
-    'verbose',     # -v --verbose
     'release',     # -r --release
     'developer',   # -d --developer
+    'mode',        # -m --mode
     'changedir',   # -c --changedir
     'command',     # new, init, clean, build, run, test, debug
     'commandargs', # <optionargs...>

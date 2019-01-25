@@ -83,7 +83,7 @@ else:
     flags = flags + ['-g']
 ```
 
-As shown at the bottom of the configuration file, the command line options for the current build command will be provided to your configuration anytime it is read. This allows you to easily change your configuration depending on the build. In addition to release, the options object also provides `options.quiet`, `options.verbose`, and `options.developer` which correspond to their respective command line flags.
+As shown at the bottom of the configuration file, the command line options for the current build command will be provided to your configuration anytime it is read. This allows you to easily change your configuration depending on the build. In addition to release, the options object also provides `options.quiet`, `options.developer`, and `options.mode` which correspond to their respective command line flags.
 
 The following table describes each option in detail.
 
@@ -219,7 +219,7 @@ The following table describes Mekpie's command line options.
 |---------|------|-------------|
 | `help` | `-h` | Displays a command line usage help message. |
 | `version` | `-V` | Prints version info and exits. |
-| `verbose` | `-v` | Provides the verbose flag to the c compiler when building your project. |
+| `mode` | `-m` | Provide a mode to the mekpie file. |
 | `quiet` | `-q` | This will suppress information from being printed to stdout. |
 | `release` | `-r` | When applicable the build will be done with the release configuration. By default, builds are done with the debug configuration. |
 | `developer` | `-d` | Runs Mekpie in developer mode. This produces additional logging and stack traces on errors. |
