@@ -1,13 +1,15 @@
+from os import name
+
 from .definitions import CompilerConfig, CompilerConfig
 from .runner      import autodetect
-from .util        import panic
-from .cli         import cli_config, ask, tell
+from .cli         import cli_config, ask, tell, panic
 
 MAIN = '''
 #include <avr/io.h>
 #include <util/delay.h>
 
 int main(void) {
+    // !!! THIS WILL ONLY WORK ON SOME DEVICES !!!
     DDRB  = 0xFF;
     PORTB = 0xFF;
     for (;;) {
@@ -372,9 +374,15 @@ def avr_gcc(hardware, programmer, baud):
         return path_hex
 
     def cc_run(cfg, exe):
-        
+
         @cli_config('port')
         def config_port():
+            if name == 'posix':
+                tell('Available ports:')
+                cfg.run(['ls /dev/cu.*'], shell=True)
+            if name == 'nt':
+                tell('Availabl eports:')
+                cfg.run(['mode'])
             return ask(('Please enter your device port', ''))
 
         cfg.run([
@@ -407,17 +415,17 @@ def avr_gcc(hardware, programmer, baud):
 
 @cli_config('avr_gcc')
 def config_avr_gcc():
-    hardware = ask((
-        'Please select your AVR hardware', 
-        '`{}` is not a valid AVR hardware selection!',
-    ), validator=lambda s : s in hardware_list)
-    programmer = ask((
-        'Please select your programmer', 
-        '`{}` is not a valid programmer',
-    ), default='wiring', validator=lambda s : s in programmer_list)
-    baud = ask((
-        'Please select your baud rate',
-        '',        
-    ), default='115200')
-    return avr_gcc(hardware, programmer, baud)
-
+    return avr_gcc(
+        ask((
+            'Please select your AVR hardware', 
+            '`{}` is not a valid AVR hardware selection!',
+        ), options=hardware_list),
+        ask((
+            'Please select your programmer', 
+            '`{}` is not a valid programmer',
+        ), default='wiring', options=programmer_list),
+        ask((
+            'Please select your baud rate',
+            '',        
+        ), default='115200')
+    )

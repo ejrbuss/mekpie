@@ -3,14 +3,13 @@ import mekpie.messages as messages
 
 from .create      import command_new, command_init
 from .definitions import Options, Option
-
+from .cli         import panic, tell
 from .util import (
-    car,
-    cdr,
+    first,
+    rest,
     tab,
     split,
     empty,
-    panic,
     underline,
 )
 from .compiler import (
@@ -23,10 +22,10 @@ from .compiler import (
 )
 
 def command_help(cfg):
-    print(messages.usage)
+    tell(messages.usage, end='\n\n')
 
 def command_version(cfg):
-    print(messages.version)
+    tell(messages.version)
 
 def pre_config_commands():
     return [
@@ -61,16 +60,16 @@ def parse_arguments(args):
     args, programargs = split(args, '--')
     options.programargs = programargs
     while not empty(args):
-        arg = car(args)
+        arg = first(args)
         for option in available_options():
             if arg in option.names:
                 option.handler(options, args[:option.nargs], argsall)
                 args = args[option.nargs:] if option.nargs else []
                 break
         else:
-            argument_error(messages.unknown_argument, car(args), argsall)
+            argument_error(messages.unknown_argument, first(args), argsall)
     if options.mode:
-        options.mode = car(options.mode)
+        options.mode = first(options.mode)
     return options
 
 def flag(name, aliases, nargs=1):
@@ -79,7 +78,7 @@ def flag(name, aliases, nargs=1):
         if options[name]:
             argument_error(messages.repeated_option.format(name), name, argsall)
         else:
-            options[name] = cdr(args) or True
+            options[name] = rest(args) or True
 
     return Option(
         names   = aliases,
@@ -93,7 +92,7 @@ def command(command, aliases):
         if options.command:
             argument_error(messages.too_many_arguments, command, argsall)
         else:
-            options.commandargs = cdr(args)
+            options.commandargs = rest(args)
             options.command     = command
 
     return Option(

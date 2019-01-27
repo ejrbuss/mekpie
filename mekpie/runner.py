@@ -4,16 +4,16 @@ from subprocess import run, PIPE
 
 import mekpie.messages as messages
 
-from .util import panic, log
+from .cli  import panic, log
 
-def lrun(args, quiet=False, error=True, runset=[]):
+def lrun(args, quiet=False, error=True, runset=[], **kwargs):
     log('Running...\n' + serialize_command(args))
     try:
         if quiet:
-            if run(args, stdout=PIPE, stderr=PIPE).returncode != 0:
+            if run(args, stdout=PIPE, stderr=PIPE, **kwargs).returncode != 0:
                 raise OSError
         else:
-            if run(args).returncode != 0:
+            if run(args, **kwargs).returncode != 0:
                 raise OSError
         runset.append(True)
     except KeyboardInterrupt:

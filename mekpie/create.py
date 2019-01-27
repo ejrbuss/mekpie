@@ -4,7 +4,8 @@ from os.path import basename, abspath, exists
 
 import mekpie.messages as messages
 
-from .util          import panic, empty, car, smkdir, exec_str
+from .cli           import panic
+from .util          import empty, first, smkdir, exec_str
 from .config        import config_from_str
 from .cli           import cli_config, ask, tell
 from .definitions   import Config, DEFAULT_MEKPY
@@ -27,7 +28,7 @@ from .structure     import (
 @cli_config('mekpie')
 def config_mekpie(options):
     name = ask(messages.mekpie_config_name,
-        default   = car(options.commandargs),
+        default   = first(options.commandargs),
         validator = lambda s : not empty(s),
     )
     tell(messages.compiler_configs)
@@ -51,11 +52,11 @@ def command_new(options):
     create_includes()
     create_target()
     config_from_str(options, get_mekpy_source(name, cc))
-    print(messages.created.format(name).strip())
+    tell(messages.created.format(name).strip())
 
 def command_init(options):
-    if not car(options.commandargs):
-        options.commandargs[0] = basename(abspath(curdir))
+    if not first(options.commandargs):
+        options.commandargs.append(basename(abspath(curdir)))
     name, cc = config_mekpie(options)
     check_name(name)
     create_mekpy(name, cc)
@@ -64,7 +65,7 @@ def command_init(options):
     create_includes()
     create_target()
     config_from_str(options, get_mekpy_source(name, cc))
-    print(messages.initialized.format(name).strip())
+    tell(messages.initialized.format(name).strip())
 
 def check_name(name):
     if not name:

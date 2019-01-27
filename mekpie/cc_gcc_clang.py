@@ -53,12 +53,13 @@ def gcc_clang(cmd, dbg):
 
 @cli_config('gcc_clang')
 def config_gcc_clang():
-    autodetected = autodetect(['cc', 'gcc', 'clang'])
-    if autodetected:
-        tell(f'Auto-detected {autodetected} as the compiler command.')
-    cmd = ask(('Please select a compiler command', ''), default=autodetected)
-    autodetected = autodetect(['dbg', 'lldb'])
-    if autodetected:
-        tell(f'Auto-detected {autodetected} as the debug command.')
-    dbg = ask(('Please select a debug command', ''), default=autodetected)
-    return gcc_clang(cmd, dbg)
+    return gcc_clang(
+        ask((
+            'Please select a compiler command', 
+            '',
+        ), default=autodetect(['cc', 'gcc', 'clang'])),
+        ask((
+            'Please select a debug command', 
+            ''
+        ), default=autodetect(['dbg', 'lldb']))
+    )

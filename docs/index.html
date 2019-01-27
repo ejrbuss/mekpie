@@ -50,22 +50,39 @@
                                         <path id="path3" d="M180.400 131.283 C 169.950 137.664,153.434 147.724,143.698 153.637 L 125.997 164.390 107.498 153.150 C 97.324 146.968,80.858 136.967,70.907 130.925 C 60.955 124.882,52.578 119.998,52.290 120.069 C 50.390 120.543,14.915 142.632,15.523 142.962 C 16.350 143.412,44.267 160.357,71.600 177.001 C 108.852 199.684,125.348 209.682,125.828 209.866 C 126.247 210.027,155.939 192.306,162.800 187.800 C 165.238 186.199,174.559 180.515,218.400 153.893 C 228.190 147.948,236.525 142.862,236.922 142.589 C 237.663 142.081,201.354 119.539,199.956 119.640 C 199.650 119.662,190.850 124.901,180.400 131.283 " stroke="none" fill="#ffbc49" fill-rule="evenodd"></path>
                                     </svg>
                                 </div>
-                                <figcaption class="figure-caption text-center" style="color:#ccc">v0.0.7</figcaption>
+                                <figcaption class="figure-caption text-center" style="color:#ccc">v0.1.0</figcaption>
                             </figure>
                             <h2 id="makebuildingcassimpleaspie">Make Building C as Simple as Pie</h2>
 <p>Mekpie is an opinionated build system for small scale C projects. The core premise of Mekpie is that you should not be spending time worrying about Make files, compiler arguments, or build times, when working on a small C project. By enforcing a simple directory structure and always providing a clean build, Mekpie saves you time and effort. For added convenience Mekpie takes notes from tools like <a href="https://doc.rust-lang.org/cargo/guide/index.html">Rust's cargo</a> and <a href="https://www.npmjs.com/">Node's npm</a> and provides options for building, running, cleaning, and testing your current project.</p>
 <p>Mekpie is a small-scale project and is not supposed to replace tools like <a href="https://cmake.org/">CMake</a> or provide any sort of package management capabilities. Use Mekpie when the alternative is a shoddy Make file or manually compiling.</p>
+<p>Currently Mekpie supports the gcc, clang, avr-gcc, and emscripten compilers, as well as allows users to write custom compiler configurations.</p>
 <h3 id="installing">Installing</h3>
 <p>Mekpie is a python package. Use pip to install it!</p>
-<pre><code class="bash language-bash">$ pip install mekpie
+<pre><code class="s language-s">$ pip install mekpie
 </code></pre>
 <h3 id="gettingstarted">Getting Started</h3>
-<p>Create a new project by running</p>
-<pre><code class="bash language-bash">$ mekpie new "project-name"
+<p>Create a new project by running <code>mekpie new</code>. Mekpie will walk you through the configuration.</p>
+<pre><code class="shell language-shell">$ mekpie new "project-name"
+┌ Configuring mekpie...
+│ Please provide a name for your project (default project-name):
+│ Selected project-name.
+│ Mekpie supports the following c compilers, please select one (compilers must be installed seperately):
+│     - gcc_clang   for use with the gcc or clang compiler
+│     - emscripten  for use with the emscripten c to js compiler
+│     - avr_gcc     for use with avr-gcc and avrdude
+│ Please select a cc (default gcc_clang):
+│ Selected gcc_clang.
+│ ┌ Configuring gcc_clang...
+│ │ Please select a compiler command (default cc):
+│ │ Selected cc.
+│ │ Please select a debug command (default lldb):
+│ │ Selected lldb.
+│ └ gcc_clang configured!
+└ mekpie configured!
 project-name created successfully!
 </code></pre>
 <p>Then navigate to the project directory and run</p>
-<pre><code class="bash language-bash">$ mekpie run
+<pre><code class="shell language-shell">$ mekpie run
 Project successfully cleaned.
 Project successfully built. (0.060s)
 Hello, World!
@@ -92,28 +109,26 @@ Hello, World!
 <p>The <code>tests/</code> folder should contain all your test files. Jump <a href="#testing">here</a> to find out more about tests.</p>
 <p>The final file created by Mekpie is <code>mek.py</code> which is a small python file that allows you to configure Mekpie.</p>
 <h3 id="configuration">Configuration</h3>
-<p>Configuration of Mekpie is done through the python file <code>mek.py</code> in the root of your project directory. Mekpie will autogenerate a file like the following when you first create a project. Release and debug flags are also automatically generated based on the detected compiler.</p>
+<p>Configuration of Mekpie is done through the python file <code>mek.py</code> in the root of your project directory. Mekpie will autogenerate a file like the following when you first create a project. Release and debug flags are also automatically generated based on the selected compiler configuration.</p>
 <pre><code class="python language-python"># This is a standard configuration file for mekpie
 
-name = 'test' 
-main = 'test.c'
+name = 'project-name' 
+main = 'project-name.c'
+cc = gcc_clang(cmd='cc', dbg='lldb')
 libs = []
-cc = 'gcc/clang'
-cmd = 'clang'
-dbg = 'lldb'
-flags = ['-Wall']
+flags = []
 
 if options.release:
-    flags = flags + ['-O']
+    flags += ['-Wall', '-O']
 else:
-    flags = flags + ['-g']
+    flags += ['-Wall', '-g']
 </code></pre>
 <p>As shown at the bottom of the configuration file, the command line options for the current build command will be provided to your configuration anytime it is read. This allows you to easily change your configuration depending on the build. In addition to release, the options object also provides <code>options.quiet</code>, <code>options.developer</code>, and <code>options.mode</code> which correspond to their respective command line flags.</p>
-<p>The following table describes each option in detail.</p>
+<p>The following table describes each <code>mek.py</code> variable in detail.</p>
 <table>
 <thead>
 <tr>
-<th>Option</th>
+<th>Variable</th>
 <th>Default</th>
 <th>Description</th>
 </tr>
@@ -130,24 +145,14 @@ else:
 <td>This should be the entry point for your main program. By default, it will point at the c file auto-generated by Mekpie.</td>
 </tr>
 <tr>
+<td><code>cc</code></td>
+<td><code>gcc_clang(...)</code></td>
+<td>The c compiler configuration. Currently supported compilers include <code>gcc_clang</code>, <code>avr_gcc</code>, and <code>emscripten</code>. See <a href="#compilerconfiguration">Compiler Configurations</a> for more details.</td>
+</tr>
+<tr>
 <td><code>libs</code></td>
 <td><code>[]</code></td>
 <td>Add any libraries you want linked with your project here. For instance, if you wanted to include the c math library you would change libs to <code>['m']</code>.</td>
-</tr>
-<tr>
-<td><code>cc</code></td>
-<td><code>'gcc/clang'</code></td>
-<td>The c compiler configuration. Currently the only supported compiler is gcc and clang. In the future we may support more configurations.</td>
-</tr>
-<tr>
-<td><code>cmd</code></td>
-<td><em>auto-detected</em></td>
-<td>The command on the command line that corresponds to your c compiler. By default, mekpie will try to auto-detect this.</td>
-</tr>
-<tr>
-<td><code>dbg</code></td>
-<td><em>auto-detected</em></td>
-<td>The command on the command line used to start your desired debugger. By default, mekpie will try to auto-detect this.</td>
 </tr>
 <tr>
 <td><code>flags</code></td>
@@ -156,9 +161,42 @@ else:
 </tr>
 </tbody>
 </table>
+<h3 id="compilerconfiguration">Compiler Configuration</h3>
+<p>Mekpie provides three compiler configurations by default, <code>gcc_clang</code>, <code>gcc_avr</code>, and <code>emscripten</code>. The easiest way to get started with these is to use the configuration helper when running <code>mekpie new</code> or <code>mekpie init</code> and then selecting your desired compiler configuration, however these can be changed at any point.</p>
+<h4 id="gcc_clang"><code>gcc_clang</code></h4>
+<p>This compiler configuration is designed for use with the gcc compiler, clang compiler, and MinGW compiler. Insert the following code into <code>mek.py</code> to use this configuration</p>
+<pre><code class="python language-python">cc = gcc_clang(
+    cmd = 'cc',  # This shell command for your compiler
+    dbg = 'gdb', # This shell command for your debugger
+)
+</code></pre>
+<h4 id="avr_gcc"><code>avr_gcc</code></h4>
+<p>This compiler configuration is designed for use with the AVR gcc compiler and avrdude. It will automatically compiler your code, convert it to hex format, and upload it via a serial port on your computer to a desired piece of hardware. This compiler configuration expects <code>avr-gcc</code> and <code>avrdude</code> to be available from the command line. Insert the following code into <code>mek.py</code> to use this configuration</p>
+<pre><code class="python language-python">cc = avr_gcc(
+    hardware   = 'atmega2560', # Your AVR hardware
+    programmer = 'wiring',     # The programmer to use with avrdude
+    baud       = '115200',     # The upload baud rate (default 115200)
+)
+</code></pre>
+<h4 id="emscripten"><code>emscripten</code></h4>
+<p>This compiler configuration is designed for use with the Emscripten c to js compiler. It expects <code>emcc</code> and <code>node</code> to be available from the command line. Insert the following code into <code>mek.py</code> to use this configuration</p>
+<pre><code class="python language-python">cc = emscripten()
+</code></pre>
+<h4 id="customconfiguration">Custom Configuration</h4>
+<p>There is currently limited support for providing your own compiler configuration. This is done by implementing the <code>CompilerConfig</code> interface. For example</p>
+<pre><code class="python language-python">cc = CompilerConfig(
+    name    = 'my_compiler_config', # The name of the config
+    compile = my_compiler_function, # Your compile function
+    link    = my_link_function,     # Your linking function
+    run     = my_run_function,      # Your running function
+    debug   = my_debug_function,    # Your debug function
+    once    = my_once_function,     # Your once function
+)
+</code></pre>
+<p>Each function is passd the relevant variables to complete its expected task. As this feature is still in early development full documentation is not provided. See <code>/mekpie/cc_gcc_clang.py</code> for an example implementation.</p>
 <h3 id="running">Running</h3>
 <p>Typically, you will skip running <code>mekpie build</code> when running your program, as building happens automatically for <code>mekpie run</code>, <code>mekpie debug</code>, and <code>mekpie test</code>. <code>mekpie run</code> will build and then execute the main file specified by your project <a href="#configuration">configuration</a>. You can specify a release build using <code>--release</code> or <code>-r</code>. You can provide program arguments to your main program by separating arguments to mekpie with <code>--</code>. Everything after this symbol will be passed to your program, rather than Mekpie. For example</p>
-<pre><code class="bash language-bash">$ mekpie --release run -- ./some-path --flag 42
+<pre><code class="shell language-shell">$ mekpie --release run -- ./some-path --flag 42
 </code></pre>
 <p>Use <code>mekpie debug</code> if you want to start your program in your configured debugger. The usage of <code>mekpie test</code> is broken down in the next section.</p>
 <h3 id="testing">Testing</h3>
@@ -175,7 +213,7 @@ void test_one() {
 }
 </code></pre>
 <p>You could run those tests with either of the following commands</p>
-<pre><code class="bash language-bash">$ mekpie test
+<pre><code class="shell language-shell">$ mekpie test
 $ mekpie test project-tests
 </code></pre>
 <p>You can provide any number of test names to the test command. All of these tests will be run. Alternatively, providing no test names will simply run all of the tests. Test files are compiled just like your program's main file, meaning they have access to all of your project's header files.</p>
@@ -185,42 +223,42 @@ $ mekpie test project-tests
 <p>Creates a new project in a subdirectory of the provided name. The command will fail if the subdirectory already exists. If you want to initialize Mekpie in an already created directory us <code>mekpie init</code> instead. </p>
 <p>This command will create all of the necessary files to use <code>mekpie run</code> to build and run a simple Hello World program in c.</p>
 <p>Usage</p>
-<pre><code class="bash language-bash">$ mekpie [--changedir|--developer] new &lt;project-name&gt;
+<pre><code class="shell language-shell">$ mekpie [--changedir|--developer] new &lt;project-name&gt;
 </code></pre>
 <h4 id="init"><code>init</code></h4>
 <p>Behaves just like <code>mekpie new</code> accept initializes the project in the current directory. The current directory's name will be used as the project name.</p>
 <p>Usage</p>
-<pre><code class="bash language-bash">$ mekpie [--changedir|--developer] init
+<pre><code class="shell language-shell">$ mekpie [--changedir|--developer] init
 </code></pre>
 <h4 id="test"><code>test</code></h4>
 <p>When no test names are provided this command will run all files contained in <code>tests/</code>. If test names are provided only those test files whose names are included will be run. Any number of test names can be provided.</p>
 <p>Usage</p>
-<pre><code class="bash language-bash">$ mekpie [--release|--quiet|--changedir|--developer] test [test-names...]
+<pre><code class="shell language-shell">$ mekpie [--release|--quiet|--changedir|--developer] test [test-names...]
 </code></pre>
 <h4 id="clean"><code>clean</code></h4>
 <p>Removes all existing executables from <code>target/</code>.</p>
 <p>Usage</p>
-<pre><code class="bash language-bash">$ mekpie [--changedir|--developer] clean
+<pre><code class="shell language-shell">$ mekpie [--changedir|--developer] clean
 </code></pre>
 <h4 id="build"><code>build</code></h4>
 <p>Attempts to create an executable in <code>target/</code>.</p>
 <p>Usage</p>
-<pre><code class="bash language-bash">$ mekpie [--release|--quiet|--changedir|--developer] build
+<pre><code class="shell language-shell">$ mekpie [--release|--quiet|--changedir|--developer|--mode] build
 </code></pre>
 <h4 id="run"><code>run</code></h4>
 <p>Cleans, builds, and then runs the main file of the project. The main file of a project is specified in the project configuration.</p>
 <p>Usage</p>
-<pre><code class="bash language-bash">$ mekpie [--release|--quiet|--changedir|--developer] run
+<pre><code class="shell language-shell">$ mekpie [--release|--quiet|--changedir|--developer|--mode] run
 </code></pre>
 <h4 id="debug"><code>debug</code></h4>
 <p>Cleans, builds, and then runs the debugger on the main file of the project.</p>
 <p>Usage</p>
-<pre><code class="bash language-bash">$ mekpie [--quiet|--changedir|--developer] debug
+<pre><code class="shell language-shell">$ mekpie [--quiet|--changedir|--developer|--mode] debug
 </code></pre>
 <h4 id="dist"><code>dist</code></h4>
 <p>Cleans, builds, and then copies an executable into the project root. The executable will be given the sanme name as the project.</p>
 <p>Usage</p>
-<pre><code class="bash language-bash">$ mekpie [--release|--quite|--changdir|--developer] dist
+<pre><code class="shell language-shell">$ mekpie [--release|--quite|--changdir|--developer|--mode] dist
 </code></pre>
 <h3 id="options">Options</h3>
 <p>The following table describes Mekpie's command line options.</p>
@@ -285,7 +323,7 @@ $ mekpie test project-tests
                                 </p>
                                 <div class="divider"></div>
                                 <p class="text-center">
-                                    v0.0.7 © 2017 <a href="http://www.ejrbuss.net">Eric Buss</a>
+                                    v0.1.0 © 2017 <a href="http://www.ejrbuss.net">Eric Buss</a>
                                 </p>
                             </div>
                         </footer>

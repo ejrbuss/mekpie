@@ -1,16 +1,16 @@
 from .record import Record, required
 
-DEFAULT_MEKPY='''
+DEFAULT_MEKPY = '''
 # This is a standard configuration file for mekpie
 
 # the name of your project
 name = '{}' 
 # the .c file containing `main`
 main = '{}'
-# any libraries to load
-libs = []
 # the c compiler configuration to use (gcc_clang, avr_gcc, or emscripten)
 cc = {}
+# any libraries to load
+libs = []
 # additional compiler flags
 flags = []
 
@@ -63,7 +63,7 @@ Config = Record({
 })
 
 CompilerConfig = Record({
-    'name'         : required, # Nam of the configuration
+    'name'         : required, # Name of the config
     'compile'      : required, # Compilation function
     'link'         : required, # Linking function
     'run'          : required, # Runnning function

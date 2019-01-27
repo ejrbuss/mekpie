@@ -8,28 +8,9 @@ from filecmp import dircmp
 import mekpie.debug    as debug
 import mekpie.messages as messages
 
-# Debug
-# ---------------------------------------------------------------------------- #
+from .cli import panic, log
 
-def panic(message=None):
-    if message is None:
-        exit(1)
-    errprint(f'\n{message.strip()}\n\n')
-    if debug.debug:
-        raise Exception('Debug')
-    else:
-        exit(1)
-    
-
-def log(message):
-    errprint(f' -- {tab(str(message)).strip()}\n') if debug.debug else None
-    return message
-
-def errprint(string):
-    stderr.write(string)
-    stderr.flush()
-
-# Numeric
+# Numerical
 # ---------------------------------------------------------------------------- #
 
 def clamp(value, bottom, top):
@@ -41,20 +22,17 @@ def clamp(value, bottom, top):
 def empty(collection):
     return len(collection) == 0
 
-def car(collection):
+def first(collection):
     if not empty(collection):
         return collection[0]
+
+def rest(collection):
+    if not empty(collection):
+        return collection[1:]
 
 def last(collection):
     if not empty(collection):
         return collection[-1]
-
-def cdr(collection):
-    if not empty(collection):
-        return collection[1:]
-
-def cons(item, collection):
-    return [item] + collection
 
 def shift(collection, n=1):
     for _ in range(n):
@@ -94,6 +72,7 @@ def underlined_collection(underlined_element, collection):
 # ---------------------------------------------------------------------------- #
 
 def smkdir(path):
+    log(f'Creating directory {path}...')
     if not exists(path):
         mkdir(path)
 
@@ -103,6 +82,7 @@ def srmtree(path):
 
 
 def smv(source, destination):
+    log(f'Moving {source} to {destination}')
     remove(destination)
     if exists(source):
         rename(source, destination)

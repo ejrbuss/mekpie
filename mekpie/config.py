@@ -2,13 +2,13 @@ from os.path import join
 
 import mekpie.messages as messages
 
-from .definitions   import Config
+from .definitions   import Config, CompilerConfig
 from .structure     import get_main_path, get_mekpy_path
 from .cc_gcc_clang  import gcc_clang
 from .cc_avr_gcc    import avr_gcc
 from .cc_emscripten import emscripten
+from .cli           import panic
 from .util          import (
-     panic, 
      tab,
      check_is_file,
      check_is_dir, 
@@ -22,10 +22,11 @@ def get_config(options):
 
 def config_from_str(options, source):
     return config_from_dict(exec_str(source, 'mek.py', {
-        'options'    : options,
-        'gcc_clang'  : gcc_clang,
-        'avr_gcc'    : avr_gcc,
-        'emscripten' : emscripten,
+        'options'        : options,
+        'gcc_clang'      : gcc_clang,
+        'avr_gcc'        : avr_gcc,
+        'emscripten'     : emscripten,
+        'CompilerConfig' : CompilerConfig,
     }))
 
 def config_from_dict(config_dict):

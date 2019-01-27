@@ -5,7 +5,8 @@ from os.path import abspath
 import mekpie.debug    as debug
 import mekpie.messages as messages
 
-from .util        import log, car, cdr, last, panic, file_as_str, check_is_dir
+from .cli         import panic, log
+from .util        import first, rest, last, file_as_str, check_is_dir
 from .config      import get_config
 from .arguments   import parse_arguments, pre_config_commands
 from .definitions import Options
@@ -18,18 +19,18 @@ def mekpie(options):
     perform_command(options)
     chdir(root)
 
-def main(args=cdr(argv)):
+def main(args=rest(argv)):
     try:
         debug.args = args
         mekpie(parse_arguments(args))
     except KeyboardInterrupt:
-        pass
+        print()
 
 def prepare_for_command(options):
     if options.developer:
         debug.enable()
     if options.changedir:
-        chdir(check_is_dir(car(options.changedir)))
+        chdir(check_is_dir(first(options.changedir)))
 
 def perform_command(options):
     command = options.command
