@@ -5,7 +5,7 @@ const mustache = require('mustache');
 const converter = new showdown.Converter({ tables: true });
 
 const ctx = {
-    version: 'v0.1.2'
+    version: 'v0.1.3'
 };
 
 fs.readdirSync('./content').forEach(file => {

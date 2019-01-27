@@ -380,9 +380,6 @@ def avr_gcc(hardware, programmer, baud):
             if name == 'posix':
                 tell('Available ports:')
                 cfg.run(['ls /dev/cu.*'], shell=True)
-            if name == 'nt':
-                tell('Availabl eports:')
-                cfg.run(['mode'])
             return ask(('Please enter your device port', ''))
 
         cfg.run([
