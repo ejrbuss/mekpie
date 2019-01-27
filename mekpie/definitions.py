@@ -1,64 +1,4 @@
-from collections import namedtuple
-
-Option = namedtuple('Option', [
-    'names',
-    'nargs',
-    'handler',
-])
-
-Options = namedtuple('Options', [
-    'quiet',       # -q --quiet
-    'release',     # -r --release
-    'developer',   # -d --developer
-    'mode',        # -m --mode
-    'changedir',   # -c --changedir
-    'command',     # new, init, clean, build, run, test, debug
-    'commandargs', # <optionargs...>
-    'programargs', # -- <programargs...>
-])
-
-Config = namedtuple('Config', [
-    'name',                   # Project name
-    'main',                   # Entry point
-    'libs',                   # Libraries to link
-    'cc',                     # C Compiler Configuration
-    'cmd',                    # The C Compiler command
-    'dbg',                    # Debugger
-    'flags',                  # User compiler flags
-    'options',                # The provided command line options
-])
-
-CompilerPreset = namedtuple('CompilerPreset', [
-    'cc',           # the compiler config
-    'cmd',          # the compiler command
-    'dbg',          # the debug command
-    'dbg_flags',    # the debug flags
-    'release_flags' # the release flags
-])
-
-CC_CMDS = {
-    'clang' : CompilerPreset(
-        cc            = 'gcc/clang',
-        cmd           = 'clang',
-        dbg           = 'lldb',
-        dbg_flags     = '[\'-g\']',
-        release_flags = '[\'-O\']',
-    ),
-    'gcc' : CompilerPreset(
-        cc            = 'gcc/clang',
-        cmd           = 'gcc',
-        dbg           = 'gdb',
-        dbg_flags     = '[\'-g\']',
-        release_flags = '[\'-O\']',
-    ),
-    'default' : CompilerPreset(
-        cc            = 'gcc/clang',
-        cmd           = 'cc',
-        dbg           = 'debugger',
-        dbg_flags     = '[\'-g\']',
-        release_flags = '[\'-O\']',
-    )
-}
+from .record import Record, required
 
 DEFAULT_MEKPY='''
 # This is a standard configuration file for mekpie
@@ -69,14 +9,10 @@ name = '{}'
 main = '{}'
 # any libraries to load
 libs = []
-# the c compiler configuration to use (gcc/clang)
-cc = '{}'
-# the c compiler command to use on the command line
-cmd = '{}'
-# the debugger to use
-dbg = '{}'
+# the c compiler configuration to use (gcc_clang, avr_gcc, or emscripten)
+cc = {}
 # additional compiler flags
-flags = ['-Wall']
+flags = []
 
 if options.release:
     flags = flags + {}
@@ -95,3 +31,46 @@ int main() {
 '''.strip()
 
 VERSION = '0.0.1'
+
+Option = Record({
+    'names'   : required, 
+    'nargs'   : None,
+    'handler' : None,
+})
+
+Options = Record({
+    'quiet'       : False,     # -q --quiet
+    'release'     : False,     # -r --release
+    'developer'   : False,     # -d --developer
+    'mode'        : False,     # -m --mode
+    'changedir'   : False,     # -c --changedir
+    'command'     : None,      # new, init, clean, build, run, test, debug
+    'commandargs' : [],        # <optionargs...>
+    'programargs' : [],        # -- <programargs...>
+})
+
+Config = Record({
+    'name'       : None, # Project name
+    'main'       : None, # Entry point
+    'libs'       : [],   # Libraries to link
+    'cc'         : None, # Compiler Configuration
+    'flags'      : [],   # User compiler flags
+    'options'    : None, # The provided command line options
+    'includes'   : [],   # Include directories
+    'once'       : None, # Provided by plugin
+    'targetpath' : None, # Function that providees target path
+    'run'        : None, # Provides a run function with correct flags
+})
+
+CompilerConfig = Record({
+    'name'         : required, # Nam of the configuration
+    'compile'      : required, # Compilation function
+    'link'         : required, # Linking function
+    'run'          : required, # Runnning function
+    'debug'        : required, # Debug function
+    'once'         : (lambda *args : None),
+    'ccsource'     : None,     # Mekpy source for project creation
+    'csource'      : MAIN,     # csource, by default hello world
+    'debugflags'   : [],       # Default debug flags    
+    'releaseflags' : [],       # Default release flags
+})

@@ -36,18 +36,6 @@ def pre_config_commands():
         command_init,
     ]
 
-def default_options():
-    return Options(
-        quiet       = False,
-        release     = False,
-        developer   = False,
-        changedir   = False,
-        mode        = None,
-        command     = None,
-        commandargs = [],
-        programargs = [],
-    )
-
 def available_options():
     return [
         flag('quiet',            ['-q', '--quiet']),
@@ -69,19 +57,19 @@ def available_options():
 
 def parse_arguments(args):
     argsall = args[:]
-    options = default_options()._asdict()
+    options = Options()
     args, programargs = split(args, '--')
-    options['programargs'] = programargs
+    options.programargs = programargs
     while not empty(args):
         arg = car(args)
-        for names, nargs, handler in available_options():
-            if arg in names:
-                handler(options, args[:nargs], argsall)
-                args = args[nargs:] if nargs else []
+        for option in available_options():
+            if arg in option.names:
+                option.handler(options, args[:option.nargs], argsall)
+                args = args[option.nargs:] if option.nargs else []
                 break
         else:
             argument_error(messages.unknown_argument, car(args), argsall)
-    return Options(**options)
+    return options
 
 def flag(name, aliases, nargs=1):
 
@@ -100,15 +88,14 @@ def flag(name, aliases, nargs=1):
 def command(command, aliases):
 
     def handle_command(options, args, argsall):
-        if options['command']:
+        if options.command:
             argument_error(messages.too_many_arguments, command, argsall)
         else:
-            options['commandargs'] = cdr(args)
-            options['command']    = command
+            options.commandargs = cdr(args)
+            options.command     = command
 
     return Option(
         names   = aliases,
-        nargs   = None,
         handler = handle_command,
     )
 

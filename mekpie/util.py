@@ -29,6 +29,12 @@ def errprint(string):
     stderr.write(string)
     stderr.flush()
 
+# Numeric
+# ---------------------------------------------------------------------------- #
+
+def clamp(value, bottom, top):
+    return max(bottom, min(top, value))
+
 # Collections
 # ---------------------------------------------------------------------------- #
 

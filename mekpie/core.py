@@ -12,15 +12,18 @@ from .definitions import Options
 
 def mekpie(options):
     root = abspath(curdir)
-    if type(options) != Options:
+    if type(options) != type(Options()):
         panic(messages.api_no_options)
     prepare_for_command(options)
     perform_command(options)
     chdir(root)
 
 def main(args=cdr(argv)):
-    debug.args = args
-    mekpie(parse_arguments(args))
+    try:
+        debug.args = args
+        mekpie(parse_arguments(args))
+    except KeyboardInterrupt:
+        pass
 
 def prepare_for_command(options):
     if options.developer:

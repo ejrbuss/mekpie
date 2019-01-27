@@ -4,11 +4,12 @@ from os.path import basename, abspath, exists
 
 import mekpie.messages as messages
 
-from .util        import panic, empty, car, smkdir, exec_str
-from .config      import config_from_dict
-from .autodetect  import autodetect_compiler
-from .definitions import DEFAULT_MEKPY, MAIN
-from .structure   import (
+from .util         import panic, empty, car, smkdir, exec_str
+from .config       import config_from_str
+from .cli          import cli_config, ask, tell
+from .definitions  import Config, DEFAULT_MEKPY
+from .cc_gcc_clang import gcc_clang, config_gcc_clang
+from .structure    import (
     set_project_path,
     get_project_path,
     get_mekpy_path,
@@ -21,27 +22,44 @@ from .structure   import (
     get_target_release_path,
 )
 
+@cli_config('mekpie')
+def config_mekpie(options):
+    name = ask(messages.mekpie_config_name,
+        default   = car(options.commandargs),
+        validator = lambda s : not empty(s),
+    )
+    tell(messages.compiler_configs)
+    cc = ask(messages.mekpie_config_cc,
+        default = 'gcc_clang',
+        options = ['gcc_clang'],
+    )
+    if cc == 'gcc_clang':
+        cc = config_gcc_clang()
+    return name, cc
+
 def command_new(options):
-    name = project_name(options)
+    name, cc = config_mekpie(options)
     check_name(name)
     create_project_directory(name)
-    create_mekpy(name)
-    create_src(name)
+    create_mekpy(name, cc)
+    create_src(name, cc)
     create_tests()
     create_includes()
     create_target()
-    config_from_dict(exec_str(get_mekpy_source(name), 'default mek.py', { 'options': options }), options)
+    config_from_str(options, get_mekpy_source(name, cc))
     print(messages.created.format(name).strip())
 
 def command_init(options):
-    name = basename(abspath(curdir))
+    if not car(options.commandargs):
+        options.commandargs[0] = basename(abspath(curdir))
+    name, cc = config_mekpie(options)
     check_name(name)
-    create_mekpy(name)
-    create_src(name)
+    create_mekpy(name, cc)
+    create_src(name, cc)
     create_tests()
     create_includes()
     create_target()
-    config_from_dict(exec_str(get_mekpy_source(name), 'default mek.py', { 'options': options }), options)
+    config_from_str(options, get_mekpy_source(name, cc))
     print(messages.initialized.format(name).strip())
 
 def check_name(name):
@@ -54,16 +72,16 @@ def create_project_directory(name):
     set_project_path(name)
     smkdir(get_project_path())
 
-def create_mekpy(name):
+def create_mekpy(name, cc):
     if not exists(get_mekpy_path()):
         with open(get_mekpy_path(), 'w+') as rsc:
-            rsc.write(get_mekpy_source(name))
+            rsc.write(get_mekpy_source(name, cc))
 
-def create_src(name):
+def create_src(name, cc):
     smkdir(get_src_path())
     if not exists(get_main_path(name + '.c')):
         with open(get_main_path(name + '.c'), 'w+') as rsc:
-            rsc.write(get_main_source())
+            rsc.write(cc.csource)
 
 def create_tests():
     smkdir(get_test_path())
@@ -76,20 +94,11 @@ def create_target():
     smkdir(get_target_release_path())
     smkdir(get_target_debug_path())
 
-def project_name(options):
-    return car(options.commandargs)
-
-def get_main_source():
-    return MAIN + '\n'
-
-def get_mekpy_source(name):
-    compiler_preset = autodetect_compiler()
+def get_mekpy_source(name, cc):
     return DEFAULT_MEKPY.format(
         name, 
         name + '.c', 
-        compiler_preset.cc, 
-        compiler_preset.cmd, 
-        compiler_preset.dbg,
-        compiler_preset.release_flags,
-        compiler_preset.dbg_flags,
+        str(cc.ccsource),
+        str(cc.releaseflags),
+        str(cc.debugflags),
     )

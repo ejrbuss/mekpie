@@ -164,3 +164,20 @@ Project successfully cleaned.
 build_succeeded = '''
 Project successfully built. ({:.3f}s)
 '''
+
+mekpie_config_name = (
+    'Please provide a name for your project',
+    '{} is not a valid project name!'
+)
+
+compiler_configs = '''
+Mekpie supports the following c compilers, please select one (compilers must be installed seperately):
+    - `gcc_clang`: for use with the gcc or clang compiler 
+    - `emscripten`: for use with the emscripten c to js compiler
+    - `avr_gcc`: for use with AVR boards, uses AVRDUDE for uploading
+'''
+
+mekpie_config_cc = (
+    'Please select a cc',
+    '{} is not a valid cc! See the list above.'
+)

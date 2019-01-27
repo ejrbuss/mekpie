@@ -7,7 +7,10 @@ import mekpie.messages as messages
 
 from .util         import (
     smv,
-    panic, 
+    panic,
+    clamp,
+    car, 
+    cdr,
     list_files, 
     list_all_dirs,
     remove_contents, 
@@ -36,39 +39,74 @@ def command_clean(cfg):
 def command_build(cfg):
     command_clean(cfg)
     start   = time()
-    sources = get_sources(cfg)
-    mains   = [get_main_path(cfg.main), *list_files(get_test_path(), with_ext='.c')]
-    compiler_configs[cfg.cc](cfg, sources, mains)
+    cfg.includes   = get_includes_paths()
+    cfg.targetpath = lambda path : get_bin_path(cfg, path)
+    cfg.once       = cfg.cc.once(cfg)
+    
+    objects = compile_objects(cfg)
+    exes    = link_exes(cfg, objects)
+
     if not cfg.options.quiet:
         print(messages.build_succeeded.format(time() - start).strip())
 
+    return exes
+
+def compile_objects(cfg):
+    sources = get_sources(cfg)
+    runset  = []
+    cfg.run = lambda args : lrun(args, 
+        quiet  = cfg.options.quiet, 
+        error  = False, 
+        runset = runset,
+    ) 
+    with ThreadPoolExecutor(max_workers=clamp(len(sources), 1, max_threads)) as e:
+        objects = e.map(lambda source: cfg.cc.compile(cfg, source), sources)
+    if not all(runset):
+        exit(1)
+    return list(objects)
+
+def link_exes(cfg, objects):
+    mains   = [get_main_path(cfg.main), *list_files(get_test_path(), with_ext='.c')]
+    runset  = []
+    cfg.run = lambda args : lrun(args, 
+        quiet  = True, 
+        error  = False, 
+        runset = runset,
+    ) 
+    with ThreadPoolExecutor(max_workers=clamp(len(mains), 1, max_threads)) as e:
+        exes = e.map(lambda main: cfg.cc.link(cfg, main, objects), mains)
+    if not all(runset):
+        cfg.run = lambda args: lrun(args, cfg.options.quiet)
+        for main in mains:
+            cfg.cc.link(cfg, main, objects)
+    return list(exes)
+
 def command_run(cfg):
-    command_build(cfg)
-    lrun([get_bin_path(cfg, get_main_path(cfg.main))] + cfg.options.programargs, error=False)
+    exes = command_build(cfg)
+    exe  = car(exes)
+    cfg.run = lambda args: lrun(args, cfg.options.quiet)
+    cfg.cc.run(cfg, exe)
 
 def command_debug(cfg):
     if cfg.options.release:
         panic(messages.release_debug)
-    command_build(cfg)
-    lrun([cfg.dbg, get_bin_path(cfg, get_main_path(cfg.main))])
+    exes = command_build(cfg)
+    exe  = car(exes)
+    cfg.run = lambda args: lrun(args, cfg.options.quiet)
+    cfg.cc.debug(cfg, exe)
 
 def command_test(cfg):
-    command_build(cfg)
-    for test in get_tests(cfg):
-        lrun([get_bin_path(cfg, test)])
-
-def get_tests(cfg):
-    return list_files(get_test_path(), with_filter=lambda test : 
-        test.endswith('.c')  and 
-        (filename(test) in cfg.options.commandargs or len(cfg.options.commandargs) == 0)
-    )
+    exes  = command_build(cfg)
+    tests = cdr(exes) 
+    cfg.run = lambda args: lrun(args, cfg.options.quiet)
+    for test in tests:
+        if len(cfg.options.commandargs) == 0 or any(name in test for name in cfg.options.commandargs):
+            cfg.cc.run(cfg, test)
 
 def command_dist(cfg):
-    command_build(cfg)
-    smv(
-        get_bin_path(cfg, get_main_path(cfg.main)), 
-        join(get_project_path(), cfg.name)
-    )
+    exes = command_build(cfg)
+    exe  = car(exes)
+    smv(exe, join(get_project_path(), cfg.name))
 
 def get_bin_path(cfg, path):
     root = get_target_release_path() if cfg.options.release else get_target_debug_path()
@@ -82,53 +120,3 @@ def get_sources(cfg):
 def get_includes_paths():
     includes = get_includes_path()
     return [includes] + list_all_dirs(includes)
-
-# Compiler Configs
-# ---------------------------------------------------------------------------- #
-
-def gcc_clang_config(cfg, sources, mains):
-    sources  = sources
-    libs     = ['-l' + lib for lib in cfg.libs]
-    includes = ['-I' + inc for inc in get_includes_paths()]
-    flags    = cfg.flags + includes
-    objects  = [get_bin_path(cfg, source) + '.o'
-        for source 
-        in sources
-    ]
-    # Build objects
-    with ThreadPoolExecutor(max_workers=max(1, min(len(sources), max_threads))) as e:
-        results = e.map(lambda source: lrun([
-            cfg.cmd, 
-            *flags, 
-            '-c', source,
-            '-o', get_bin_path(cfg, source) + '.o'
-        ], quiet=cfg.options.quiet, error=False), sources)
-
-    if not all(results):
-        exit(1)
-
-
-    flags = flags + libs
-    # Link executables
-    with ThreadPoolExecutor(max_workers=max(1, min(len(mains), max_threads))) as e:
-        results = e.map(lambda main : lrun([
-            cfg.cmd,
-            main,
-            *objects,
-            *flags, 
-            '-o' , get_bin_path(cfg, main)
-        ], quiet=True, error=False), mains)
-
-    if not all(results):
-        for main in mains:
-            lrun([
-                cfg.cmd,
-                main,
-                *objects,
-                *flags,
-                '-o' , get_bin_path(cfg, main)
-            ], quiet=cfg.options.quiet)
-        
-compiler_configs = {
-    'gcc/clang' : gcc_clang_config,
-}

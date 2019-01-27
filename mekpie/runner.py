@@ -1,11 +1,12 @@
 from sys        import stdout, stderr
+from shutil     import which
 from subprocess import run, PIPE
 
 import mekpie.messages as messages
 
 from .util import panic, log
 
-def lrun(args, quiet=False, error=True):
+def lrun(args, quiet=False, error=True, runset=[]):
     log('Running...\n' + serialize_command(args))
     try:
         if quiet:
@@ -14,14 +15,20 @@ def lrun(args, quiet=False, error=True):
         else:
             if run(args).returncode != 0:
                 raise OSError
-        return True
+        runset.append(True)
     except KeyboardInterrupt:
         exit(1)
     except OSError:
         if error:
             panic(messages.failed_program_call.format(serialize_command(args)))
         else:
-            False
+            runset.append(False)
 
 def serialize_command(args):
     return '$ ' + ' '.join(args)
+
+def autodetect(options, default=None):
+    for option in options:
+        if which(option) is not None:
+            return option
+    return default
