@@ -61,5 +61,5 @@ def config_gcc_clang():
         ask((
             'Please select a debug command', 
             ''
-        ), default=autodetect(['dbg', 'lldb']))
+        ), default=autodetect(['gdb', 'lldb']))
     )
