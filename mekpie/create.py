@@ -4,13 +4,14 @@ from os.path import basename, abspath, exists
 
 import mekpie.messages as messages
 
-from .util         import panic, empty, car, smkdir, exec_str
-from .config       import config_from_str
-from .cli          import cli_config, ask, tell
-from .definitions  import Config, DEFAULT_MEKPY
-from .cc_gcc_clang import config_gcc_clang
-from .cc_avr_gcc   import config_avr_gcc
-from .structure    import (
+from .util          import panic, empty, car, smkdir, exec_str
+from .config        import config_from_str
+from .cli           import cli_config, ask, tell
+from .definitions   import Config, DEFAULT_MEKPY
+from .cc_gcc_clang  import config_gcc_clang
+from .cc_avr_gcc    import config_avr_gcc
+from .cc_emscripten import config_emscripten
+from .structure     import (
     set_project_path,
     get_project_path,
     get_mekpy_path,
@@ -30,14 +31,14 @@ def config_mekpie(options):
         validator = lambda s : not empty(s),
     )
     tell(messages.compiler_configs)
-    cc = ask(messages.mekpie_config_cc,
+    cc = {
+        'gcc_clang'  : config_gcc_clang,
+        'avr_gcc'    : config_avr_gcc,
+        'emscripten' : config_emscripten,
+    }[ask(messages.mekpie_config_cc,
         default = 'gcc_clang',
-        options = ['gcc_clang', 'avr_gcc'],
-    )
-    if cc == 'gcc_clang':
-        cc = config_gcc_clang()
-    if cc == 'avr_gcc':
-        cc = config_avr_gcc()
+        options = ['gcc_clang', 'avr_gcc', 'emscripten'],
+    )]()
     return name, cc
 
 def command_new(options):

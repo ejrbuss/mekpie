@@ -15,9 +15,9 @@ cc = {}
 flags = []
 
 if options.release:
-    flags = flags + {}
+    flags += {}
 else:
-    flags = flags + {}
+    flags += {}
 '''
 
 MAIN = '''

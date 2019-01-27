@@ -69,6 +69,8 @@ def parse_arguments(args):
                 break
         else:
             argument_error(messages.unknown_argument, car(args), argsall)
+    if options.mode:
+        options.mode = car(options.mode)
     return options
 
 def flag(name, aliases, nargs=1):
