@@ -5,6 +5,7 @@ import mekpie.messages as messages
 from .definitions  import Config
 from .structure    import get_main_path, get_mekpy_path
 from .cc_gcc_clang import gcc_clang
+from .cc_avr_gcc   import avr_gcc
 from .util         import (
      panic, 
      tab,
@@ -22,7 +23,7 @@ def config_from_str(options, source):
     return config_from_dict(exec_str(source, 'mek.py', {
         'options'   : options,
         'gcc_clang' : gcc_clang,
-        # 'gcc_avr' : gcc_var,
+        'avr_gcc'   : avr_gcc,
         # 'emsccripten' : emscripten,
     }))
 

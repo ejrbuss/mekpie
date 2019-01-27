@@ -5,7 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 import mekpie.messages as messages
 
-from .util         import (
+from .runner    import lrun
+from .util      import (
     smv,
     panic,
     clamp,
@@ -16,8 +17,7 @@ from .util         import (
     remove_contents, 
     filename, 
 )
-from .runner       import lrun
-from .structure    import (
+from .structure import (
     get_project_path,
     get_test_path,
     get_target_path,
