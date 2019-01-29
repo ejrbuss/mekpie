@@ -30,7 +30,7 @@ int main() {
 }
 '''.strip()
 
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 
 Option = Record({
     'names'   : required, 

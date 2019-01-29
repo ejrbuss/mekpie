@@ -3,6 +3,8 @@ from os import name
 from .definitions import CompilerConfig, CompilerConfig
 from .runner      import autodetect
 from .cli         import cli_config, ask, tell, panic
+from .util        import list_files
+from .structure   import get_src_path
 
 MAIN = '''
 #include <avr/io.h>
@@ -358,10 +360,12 @@ def avr_gcc(hardware, programmer, baud):
     def cc_link(cfg, main, objects):
         path_elf = cfg.targetpath(main) + '.elf'
         path_hex = cfg.targetpath(main) + '.hex' 
+        asm = list_files(get_src_path(), with_ext='S')
         cfg.run([
             'avr-gcc',
             main,
             *objects,
+            *asm,
             *cfg.once['linkflags'],
             '-o', path_elf,
         ])
@@ -381,6 +385,8 @@ def avr_gcc(hardware, programmer, baud):
                 tell('Available ports:')
                 cfg.run(['ls /dev/cu.*'], shell=True)
             return ask(('Please enter your device port', ''))
+
+        
 
         cfg.run([
             'avrdude',
