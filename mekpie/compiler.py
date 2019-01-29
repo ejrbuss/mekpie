@@ -115,7 +115,10 @@ def get_bin_path(cfg, path):
     return join(root, filename(path))
 
 def get_sources(cfg):
-    sources = list_files(get_src_path(), with_ext='.c')
+    sources = (list_files(get_src_path(), with_ext='.c') 
+        + list_files(get_src_path(), with_ext='.cpp') 
+        + list_files(get_src_path(), with_ext='.cc')
+    )
     sources.remove(get_main_path(cfg.main))
     return sources
 
