@@ -67,7 +67,11 @@ def compile_objects(cfg):
     return list(objects)
 
 def link_exes(cfg, objects):
-    mains   = [get_main_path(cfg.main), *list_files(get_test_path(), with_ext='.c')]
+    tests = (list_files(get_test_path(), with_ext='.c') 
+        + list_files(get_test_path(), with_ext='.cpp') 
+        + list_files(get_test_path(), with_ext='.cc')
+    )
+    mains   = [get_main_path(cfg.main), *tests]
     runset  = []
     cfg.run = lambda args, **kwargs : lrun(args, 
         quiet  = True, 
@@ -100,7 +104,7 @@ def command_debug(cfg):
 def command_test(cfg):
     exes  = command_build(cfg)
     tests = rest(exes) 
-    cfg.run = lambda args: lrun(args, cfg.options.quiet)
+    cfg.run = lambda args, **kwargs: lrun(args, cfg.options.quiet, **kwargs)
     for test in tests:
         if len(cfg.options.commandargs) == 0 or any(name in test for name in cfg.options.commandargs):
             cfg.cc.run(cfg, test)
