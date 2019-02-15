@@ -114,6 +114,7 @@ def filename(path):
     return splitext(basename(path))[0]
 
 def file_as_str(path):
+    check_is_file(path)
     log(f'Reading the contents of {path}...')
     with open(path) as resource:
         return resource.read()
