@@ -1,5 +1,5 @@
 from functools                   import wraps
-from re                          import sub
+from re                          import sub, DOTALL
 from sys                         import stderr
 from prompt_toolkit              import print_formatted_text, HTML, prompt
 from prompt_toolkit.auto_suggest import AutoSuggest, Suggestion
@@ -35,10 +35,14 @@ def cli_config(name):
     return cli_config_decorator
 
 def fix_text(text):
+    # escape < and >
+    text = text.replace('<', '&lt;').replace('>', '&gt;')
     # replace keywordss
     text = sub(r'`(.*?)`', r'<ansimagenta>\g<1></ansimagenta>', text)
     # replace errors
     text = sub(r'!! (.*)', r'<ansired>\g<1></ansired>', text)
+    # replace logs
+    text = sub(r'\[LOG\] (.*)', r'<ansiblue>[LOG] \g<1></ansiblue>', text, flags=DOTALL)
     return text
 
 def tell(message, out=True, **kwargs):
@@ -68,19 +72,15 @@ def panic(message=None, **kwargs):
         exit(1)
 
 def log(value):
-    message = (str(value).strip()
-        .replace('>', '')
-        .replace('<', '')
-    )
     if debug.debug:
-        tell(f'<ansiblue>[LOG] {message}</ansiblue>')
+        tell(f'[LOG] {str(value).strip()}')
     return value
 
 def ask(question, default=None, options=None, validator=None):
     message, error = question
     suggestor = SuggestFromOptions(options) if options else None
     while True:
-        footer = ':' if default is None else f' (default `{default}`):'
+        footer = ':' if not default else f' (default `{default}`):'
         value = prompt(tell(f'{message}{footer}', False), auto_suggest=suggestor)
         if value == '' and default:
             value = default
