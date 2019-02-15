@@ -24,6 +24,9 @@ def get_includes_path():
 def get_target_path():
     return join(get_project_path(), 'target')
 
+def get_cache_path():
+    return join(get_target_path(), 'cache')
+
 def get_target_debug_path():
     return join(get_target_path(), 'debug')
 

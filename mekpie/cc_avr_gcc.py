@@ -1,10 +1,13 @@
 from os import name
 
+import shelve
+
 from .definitions import CompilerConfig, CompilerConfig
 from .runner      import autodetect
 from .cli         import cli_config, ask, tell, panic
 from .util        import list_files
 from .structure   import get_src_path
+from .cache       import quick_cache
 
 MAIN = '''
 #include <avr/io.h>
@@ -381,12 +384,11 @@ def avr_gcc(hardware, programmer, baud):
 
         @cli_config('port')
         def config_port():
+            port = quick_cache()
             if name == 'posix':
                 tell('Available ports:')
                 cfg.run(['ls /dev/cu.*'], shell=True)
-            return ask(('Please enter your device port', ''))
-
-        
+            return quick_cache(ask(('Please enter your device port', ''), default=port))
 
         cfg.run([
             'avrdude',
