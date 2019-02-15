@@ -346,8 +346,8 @@ def avr_gcc(hardware, programmer, baud):
         include_flags = ['-I' + inc for inc in cfg.includes]
         hardware_flag = [f'-mmcu={hardware}']
         return {
-            'compileflags' : (cfg.flags + include_flags + hardware_flag),
-            'linkflags'    : (cfg.flags + include_flags + lib_flags + hardware_flag),
+            'compileflags' : (cfg.flags + include_flags + cfg.compileflags + hardware_flag),
+            'linkflags'    : (cfg.flags + include_flags + cfg.linkflags + lib_flags + hardware_flag),
         }
     
     def cc_compile(cfg, source):
@@ -414,8 +414,9 @@ def avr_gcc(hardware, programmer, baud):
         once         = cc_once,
         ccsource     = f'avr_gcc(hardware=\'{hardware}\', programmer=\'{programmer}\', baud=\'{baud}\')',
         csource      = MAIN,
-        debugflags   = ['-Wall', '-g'],
-        releaseflags = ['-Wall', '-O'],
+        flags        = ['-Wall'],
+        debugflags   = ['-g'],
+        releaseflags = ['-O'],
     )
 
 @cli_config('avr_gcc')

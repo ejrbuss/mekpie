@@ -111,6 +111,8 @@ The following table describes each `mek.py` variable in detail.
 | `cc` | `gcc_clang(...)` | The c compiler configuration. Currently supported compilers include `gcc_clang`, `avr_gcc`, and `emscripten`. See [Compiler Configurations](#compilerconfiguration) for more details.
 | `libs` | `[]` | Add any libraries you want linked with your project here. For instance, if you wanted to include the c math library you would change libs to `['m']`. |
 | `flags` | `[]` | These flags will be passed to the compiler whenever a file is compiled. For instance, to always produce verbose output from the compiler, flags could be changed to `[-v]`. |
+| `compileflags` | `[]` | These flags will **only** be passed to the compiler whenever an object is compiled. |
+| `linkflags` | `[]` | These flags will **only** be passed to the compiler whenever a file is linked. |
 
 ### Compiler Configuration
 

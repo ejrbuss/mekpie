@@ -104,6 +104,7 @@ def get_mekpy_source(name, cc):
         name, 
         name + '.c', 
         str(cc.ccsource),
+        str(cc.flags),
         str(cc.releaseflags),
         str(cc.debugflags),
     )

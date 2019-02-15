@@ -42,6 +42,8 @@ def check_config(config):
     check_libs(config.libs)
     check_cc(config.cc)
     check_flags(config.flags)
+    check_compileflags(config.compileflags)
+    check_linkflags(config.linkflags)
     return config
 
 def check_name(name):
@@ -87,6 +89,16 @@ def check_flags(flags):
     for flag in flags:
         check_type('flags', flag, str)
 
+def check_compileflags(compileflags):
+    check_type('compilflags', compileflags, list)
+    for flag in compileflags:
+        check_type('compileflags', flag, str)
+
+def check_linkflags(linkflags):
+    check_type('linkflags', linkflags, list)
+    for flag in linkflags:
+        check_type('linkflags', flag, str)
+
 def check_type(name, value, *expected_types):
     if all([type(value) != exp for exp in expected_types]):
         panic(messages.type_error.format(
@@ -119,5 +131,7 @@ def get_description(name):
         'cc.once'                : '`cc.once` is run once per compiler configuration',
         'cmd'                    : '`cmd` specified the c compiler command',
         'dbg'                    : '`dbg` specifies the debugger to use',
-        'flags'                  : '`flags` specifies additional compiler flags',
+        'flags'                  : '`flags` specifies additional compiler and linker flags',
+        'compileflags'           : '`compileflags` specifies additional compiler flags',
+        'linkflags'              : '`linkflags` specifies additional compiler flags',
     }[name]

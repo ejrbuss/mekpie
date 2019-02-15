@@ -8,8 +8,8 @@ def gcc_clang(cmd, dbg):
         lib_flags     = ['-l' + lib for lib in cfg.libs]
         include_flags = ['-I' + inc for inc in cfg.includes]
         return {
-            'compileflags' : (cfg.flags + include_flags),
-            'linkflags'    : (cfg.flags + include_flags + lib_flags),
+            'compileflags' : (cfg.flags + include_flags + cfg.compileflags),
+            'linkflags'    : (cfg.flags + include_flags + cfg.linkflags + lib_flags),
         }
     
     def cc_compile(cfg, source):
@@ -47,8 +47,9 @@ def gcc_clang(cmd, dbg):
         debug        = cc_debug,
         once         = cc_once,
         ccsource     = f'gcc_clang(cmd=\'{cmd}\', dbg=\'{dbg}\')',
-        debugflags   = ['-Wall', '-g'],
-        releaseflags = ['-Wall', '-O'],
+        flags        = ['-Wall'],
+        debugflags   = ['-g'],
+        releaseflags = ['-O'],
     )
 
 @cli_config('gcc_clang')

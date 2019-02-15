@@ -12,7 +12,7 @@ cc = {}
 # any libraries to load
 libs = []
 # additional compiler flags
-flags = []
+flags = {}
 
 if options.release:
     flags += {}
@@ -50,27 +50,30 @@ Options = Record({
 })
 
 Config = Record({
-    'name'       : None, # Project name
-    'main'       : None, # Entry point
-    'libs'       : [],   # Libraries to link
-    'cc'         : None, # Compiler Configuration
-    'flags'      : [],   # User compiler flags
-    'options'    : None, # The provided command line options
-    'includes'   : [],   # Include directories
-    'once'       : None, # Provided by plugin
-    'targetpath' : None, # Function that providees target path
-    'run'        : None, # Provides a run function with correct flags
+    'name'          : None, # Project name
+    'main'          : None, # Entry point
+    'libs'          : [],   # Libraries to link
+    'cc'            : None, # Compiler Configuration
+    'flags'         : [],   # User compile and link flags
+    'compileflags'  : [],   # User compile flags
+    'linkflags'     : [],   # User link flags
+    'options'       : None, # The provided command line options
+    'includes'      : [],   # Include directories
+    'once'          : None, # Provided by plugin
+    'targetpath'    : None, # Function that providees target path
+    'run'           : None, # Provides a run function with correct flags
 })
 
 CompilerConfig = Record({
-    'name'         : required, # Name of the config
-    'compile'      : required, # Compilation function
-    'link'         : required, # Linking function
-    'run'          : required, # Runnning function
-    'debug'        : required, # Debug function
-    'once'         : (lambda *args : None),
-    'ccsource'     : None,     # Mekpy source for project creation
-    'csource'      : MAIN,     # csource, by default hello world
-    'debugflags'   : [],       # Default debug flags    
-    'releaseflags' : [],       # Default release flags
+    'name'          : required, # Name of the config
+    'compile'       : required, # Compilation function
+    'link'          : required, # Linking function
+    'run'           : required, # Runnning function
+    'debug'         : required, # Debug function
+    'once'          : (lambda *args : None),
+    'ccsource'      : None,     # Mekpy source for project creation
+    'csource'       : MAIN,     # csource, by default hello world
+    'flags'         : [],       # Default shared flags
+    'debugflags'    : [],       # Default debug flags
+    'releaseflags'  : [],       # Default release flags
 })

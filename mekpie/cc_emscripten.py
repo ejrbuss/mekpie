@@ -7,7 +7,7 @@ def emscripten():
     def cc_once(cfg):
         lib_flags     = ['-l' + lib for lib in cfg.libs]
         include_flags = ['-I' + inc for inc in cfg.includes]
-        return cfg.flags + include_flags + lib_flags
+        return cfg.flags + cfg.compileflags + cfg.linkflags + include_flags + lib_flags
     
     def cc_compile(cfg, source):
         return source
@@ -37,8 +37,9 @@ def emscripten():
         debug        = cc_debug,
         once         = cc_once,
         ccsource     = f'emscripten()',
-        debugflags   = ['-Wall', '-g'],
-        releaseflags = ['-Wall', '-O'],
+        flags        = ['-Wall'],
+        debugflags   = ['-g'],
+        releaseflags = ['-O'],
     )
 
 @cli_config('emscripten')
