@@ -3,7 +3,7 @@ from os.path import join
 import mekpie.messages as messages
 
 from .definitions   import Config, CompilerConfig
-from .structure     import get_main_path, get_mekpy_path
+from .structure     import get_main_path, get_mekpy_path, get_target_path
 from .cc_gcc_clang  import gcc_clang
 from .cc_avr_gcc    import avr_gcc
 from .cc_emscripten import emscripten
@@ -15,6 +15,7 @@ from .util          import (
      type_name, 
      exec_str,
      file_as_str,
+     smkdir,
 )
 
 def get_config(options):
@@ -37,6 +38,7 @@ def config_from_dict(config_dict):
     }))
 
 def check_config(config):
+    smkdir(get_target_path())
     check_name(config.name)
     check_main(config)
     check_libs(config.libs)
