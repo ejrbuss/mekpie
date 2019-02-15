@@ -12,6 +12,9 @@ def get_project_path():
 def get_mekpy_path():
     return join(get_project_path(), 'mek.py')
 
+def get_gitignore_path():
+    return join(get_project_path(), '.gitignore')
+
 def get_src_path():
     return join(get_project_path(), 'src')
 

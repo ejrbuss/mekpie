@@ -1,4 +1,4 @@
-from os.path import isdir, curdir, join
+from os.path import isdir, isfile, curdir, join
 from os      import chdir
 from os.path import basename, abspath, exists
 
@@ -8,7 +8,7 @@ from .cli           import panic
 from .util          import empty, first, smkdir, exec_str
 from .config        import config_from_str
 from .cli           import cli_config, ask, tell
-from .definitions   import Config, DEFAULT_MEKPY
+from .definitions   import Config, DEFAULT_MEKPY, DEFAULT_GITIGNORE
 from .cc_gcc_clang  import config_gcc_clang
 from .cc_avr_gcc    import config_avr_gcc
 from .cc_emscripten import config_emscripten
@@ -16,6 +16,7 @@ from .structure     import (
     set_project_path,
     get_project_path,
     get_mekpy_path,
+    get_gitignore_path,
     get_src_path,
     get_main_path,
     get_test_path,
@@ -50,7 +51,7 @@ def command_new(options):
     create_src(name, cc)
     create_tests()
     create_includes()
-    create_target()
+    create_gitignore()
     config_from_str(options, get_mekpy_source(name, cc))
     tell(messages.created.format(name).strip())
 
@@ -63,7 +64,7 @@ def command_init(options):
     create_src(name, cc)
     create_tests()
     create_includes()
-    create_target()
+    create_gitignore()
     config_from_str(options, get_mekpy_source(name, cc))
     tell(messages.initialized.format(name).strip())
 
@@ -88,16 +89,15 @@ def create_src(name, cc):
         with open(get_main_path(name + '.c'), 'w+') as rsc:
             rsc.write(cc.csource)
 
+def create_gitignore():
+    with open(get_gitignore_path(), 'a+') as rsc:
+        rsc.write(DEFAULT_GITIGNORE)
+
 def create_tests():
     smkdir(get_test_path())
 
 def create_includes():
     smkdir(get_includes_path())
-
-def create_target():
-    smkdir(get_target_path())
-    smkdir(get_target_release_path())
-    smkdir(get_target_debug_path())
 
 def get_mekpy_source(name, cc):
     return DEFAULT_MEKPY.format(
