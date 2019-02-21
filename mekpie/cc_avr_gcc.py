@@ -400,7 +400,6 @@ def avr_gcc(hardware, programmer, baud):
             '-D',
             '-U', f'flash:w:{exe}:i',
         ])
-        input('Press <enter> to continue...')
 
     def cc_debug(cfg, exe):
         panic('Debug is not supported for avr_gcc compiler config!')
