@@ -912,7 +912,7 @@ var _jsxFileName = "/Users/ejrbuss/GitHub/mekpie/docsource/components/Love.js";
     __self: this
   }, "Spectre.css"), ", & ", react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("a", {
     target: "_blank",
-    href: "/blog/siteHistory",
+    href: "/blog/site-history",
     className: "subtle",
     __source: {
       fileName: _jsxFileName,
