@@ -90,7 +90,7 @@ def link_exes(cfg, objects):
 def command_run(cfg):
     exes = command_build(cfg)
     exe  = first(exes)
-    cfg.run = lambda args, **kwargs: lrun(args, cfg.options.quiet, **kwargs)
+    cfg.run = lambda args, **kwargs: lrun(args, False, **kwargs)
     cfg.cc.run(cfg, exe)
 
 def command_debug(cfg):

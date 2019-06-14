@@ -6,7 +6,7 @@ name = 'test'
 # the .c file containing `main`
 main = 'test.c'
 # the c compiler configuration to use (gcc_clang, avr_gcc, or emscripten)
-cc = avr_gcc(hardware='atmega2560', programmer='wiring', baud='115200')
+cc = gcc_clang(cmd='cc', dbg='gdb')
 # any libraries to load
 libs = []
 # additional compiler flags
