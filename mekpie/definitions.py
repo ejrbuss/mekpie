@@ -1,6 +1,6 @@
 from .record import Record, required
 
-VERSION = '0.1.9'
+VERSION = '0.1.11'
 
 DEFAULT_MEKPY = '''
 # This is a standard configuration file for mekpie

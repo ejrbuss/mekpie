@@ -32,7 +32,7 @@ export default {
         layout: '../layouts/Docs',
         title: 'Mekpie',
         subtitle: 'make building C as simple as pie',
-        version: 'v0.1.9',
+        version: 'v0.1.11',
     }),
 
 };
